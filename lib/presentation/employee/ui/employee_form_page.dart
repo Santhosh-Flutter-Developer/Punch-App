@@ -219,24 +219,24 @@ class _EmployeeFormPageState extends State<EmployeeFormPage> {
     });
   }
 
-  void _onDesignationChanged(String? selectedRoleId) {
-    setState(() => roleId = selectedRoleId);
-    if (selectedRoleId == null) return;
-    final role = roleCtrl.roles.firstWhereOrNull((r) => r.id == selectedRoleId);
-    if (role != null) casualLeave.text = '${role.casualLeave}';
-  }
+  // void _onDesignationChanged(String? selectedRoleId) {
+  //   setState(() => roleId = selectedRoleId);
+  //   if (selectedRoleId == null) return;
+  //   final role = roleCtrl.roles.firstWhereOrNull((r) => r.id == selectedRoleId);
+  //   if (role != null) casualLeave.text = '${role.casualLeave}';
+  // }
 
-  void _onDepartmentChanged(String? deptId) {
-    setState(() => departmentId = deptId);
-    if (deptId == null) return;
-    final dept = deptCtrl.departments.firstWhereOrNull((d) => d.id == deptId);
-    if (dept != null) {
-      setState(() {
-        mobileLogin = dept.mobileLogin;
-        outsideOffice = dept.outsideAttendance;
-      });
-    }
-  }
+  // void _onDepartmentChanged(String? deptId) {
+  //   setState(() => departmentId = deptId);
+  //   if (deptId == null) return;
+  //   final dept = deptCtrl.departments.firstWhereOrNull((d) => d.id == deptId);
+  //   if (dept != null) {
+  //     setState(() {
+  //       mobileLogin = dept.mobileLogin;
+  //       outsideOffice = dept.outsideAttendance;
+  //     });
+  //   }
+  // }
 
   String? _safeVal(String? value, List<String> ids) {
     if (value == null || ids.isEmpty) return null;
