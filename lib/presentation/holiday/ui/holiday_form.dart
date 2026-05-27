@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
-import 'package:sri_hr/presentation/holiday/controller/holiday_controller.dart';
-import 'package:sri_hr/widgets/form_fields.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/utils/network_time.dart';
+import 'package:punch_app/presentation/holiday/controller/holiday_controller.dart';
+import 'package:punch_app/widgets/form_fields.dart';
+import 'package:punch_app/widgets/sri_button.dart';
 
 class HolidayForm extends StatefulWidget {
   final dynamic item;

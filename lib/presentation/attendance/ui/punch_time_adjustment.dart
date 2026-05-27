@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/attendance_log_model.dart';
-import 'package:sri_hr/presentation/attendance/controller/attendance_controller.dart';
-import 'package:sri_hr/presentation/attendance/widgets/chips.dart';
-import 'package:sri_hr/presentation/attendance/widgets/punch_grid_view.dart';
-import 'package:sri_hr/presentation/attendance/widgets/punch_table_view.dart';
-import 'package:sri_hr/presentation/attendance/widgets/view_toggle_btn.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/widgets/app_shell.dart';
-import 'package:sri_hr/widgets/empty_state.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/attendance_log_model.dart';
+import 'package:punch_app/presentation/attendance/controller/attendance_controller.dart';
+import 'package:punch_app/presentation/attendance/widgets/chips.dart';
+import 'package:punch_app/presentation/attendance/widgets/punch_grid_view.dart';
+import 'package:punch_app/presentation/attendance/widgets/punch_table_view.dart';
+import 'package:punch_app/presentation/attendance/widgets/view_toggle_btn.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/widgets/app_shell.dart';
+import 'package:punch_app/widgets/empty_state.dart';
+import 'package:punch_app/widgets/sri_button.dart';
 
 class PunchTimeAdjustment extends StatelessWidget {
   PunchTimeAdjustment({super.key});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_grid/responsive_grid.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/attendance_log_model.dart';
-import 'package:sri_hr/presentation/attendance/controller/attendance_controller.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/attendance_log_model.dart';
+import 'package:punch_app/presentation/attendance/controller/attendance_controller.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 
 class GridedView extends StatelessWidget {
   final List<Map<String, dynamic>> rows;

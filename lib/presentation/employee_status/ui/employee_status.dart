@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_grid/responsive_grid.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/employee_status/controller/employee_status_controller.dart';
-import 'package:sri_hr/presentation/employee_status/widgets/employee_status_card.dart';
-import 'package:sri_hr/widgets/app_shell.dart';
-import 'package:sri_hr/widgets/empty_state.dart';
-import 'package:sri_hr/widgets/loading_overlay.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
-import 'package:sri_hr/widgets/sri_search_bar.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/employee_status/controller/employee_status_controller.dart';
+import 'package:punch_app/presentation/employee_status/widgets/employee_status_card.dart';
+import 'package:punch_app/widgets/app_shell.dart';
+import 'package:punch_app/widgets/empty_state.dart';
+import 'package:punch_app/widgets/loading_overlay.dart';
+import 'package:punch_app/widgets/sri_button.dart';
+import 'package:punch_app/widgets/sri_search_bar.dart';
 
 class EmployeeStatus extends StatelessWidget {
   EmployeeStatus({super.key});

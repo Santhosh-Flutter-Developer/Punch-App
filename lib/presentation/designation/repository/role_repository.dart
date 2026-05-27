@@ -1,6 +1,6 @@
-import 'package:sri_hr/data/models/role_model.dart';
-import 'package:sri_hr/data/models/role_permission_model.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
+import 'package:punch_app/data/models/role_model.dart';
+import 'package:punch_app/data/models/role_permission_model.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
 
 class RoleRepository {
   Future<List<RoleModel>> getRoles(String companyId) async {

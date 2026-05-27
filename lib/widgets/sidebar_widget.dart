@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/constants/app_constants.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/company/controller/company_controller.dart';
-import 'package:sri_hr/routes/app_routes.dart';
-import 'package:sri_hr/widgets/nav_item.dart';
+import 'package:punch_app/core/constants/app_constants.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/company/controller/company_controller.dart';
+import 'package:punch_app/routes/app_routes.dart';
+import 'package:punch_app/widgets/nav_item.dart';
 
 class SidebarWidget extends StatelessWidget {
   final String currentModule;
@@ -50,7 +50,7 @@ class SidebarWidget extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    'Sri HR',
+                    'Punch App',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,

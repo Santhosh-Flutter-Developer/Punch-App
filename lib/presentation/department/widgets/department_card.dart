@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/department_model.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/department/controller/department_controller.dart';
-import 'package:sri_hr/presentation/department/widgets/mini_chip.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/department_model.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/department/controller/department_controller.dart';
+import 'package:punch_app/presentation/department/widgets/mini_chip.dart';
 
 class DepartmentCard extends StatelessWidget {
   final DepartmentModel item;

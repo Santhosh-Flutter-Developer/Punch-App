@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/salary_type_model.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/salary_type_model.dart';
 
 class SalaryTypeCard extends StatelessWidget {
   final SalaryTypeModel item;

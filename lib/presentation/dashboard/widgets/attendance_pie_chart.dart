@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/dashboard_stats_model.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/legend_item.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/section_header.dart';
-import 'package:sri_hr/widgets/sri_card.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/dashboard_stats_model.dart';
+import 'package:punch_app/presentation/dashboard/widgets/legend_item.dart';
+import 'package:punch_app/presentation/dashboard/widgets/section_header.dart';
+import 'package:punch_app/widgets/sri_card.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class AttendancePieChart extends StatelessWidget {

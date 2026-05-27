@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/presentation/dashboard/controller/dashboard_controller.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/attendance_pie_chart.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/dept_bar_chart.dart';
+import 'package:punch_app/presentation/dashboard/controller/dashboard_controller.dart';
+import 'package:punch_app/presentation/dashboard/widgets/attendance_pie_chart.dart';
+import 'package:punch_app/presentation/dashboard/widgets/dept_bar_chart.dart';
 
 class ChartsRow extends StatelessWidget {
   final DashboardController ctrl;

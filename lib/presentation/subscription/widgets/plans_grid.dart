@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/presentation/subscription/widgets/plan_card.dart';
+import 'package:punch_app/presentation/subscription/widgets/plan_card.dart';
 
 class PlansGrid extends StatelessWidget {
   final List<Map<String, dynamic>> plans;

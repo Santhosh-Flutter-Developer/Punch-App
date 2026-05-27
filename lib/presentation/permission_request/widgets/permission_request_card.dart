@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/leave_request_model.dart';
-import 'package:sri_hr/data/models/permission_request_model.dart';
-import 'package:sri_hr/presentation/permission_request/widgets/badge.dart';
-import 'package:sri_hr/widgets/status_badge.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/leave_request_model.dart';
+import 'package:punch_app/data/models/permission_request_model.dart';
+import 'package:punch_app/presentation/permission_request/widgets/badge.dart';
+import 'package:punch_app/widgets/status_badge.dart';
 
 class PermissionCard extends StatelessWidget {
   final PermissionRequestModel req;

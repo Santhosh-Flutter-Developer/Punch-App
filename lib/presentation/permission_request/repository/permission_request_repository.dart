@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/data/models/permission_request_model.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
+import 'package:punch_app/data/models/permission_request_model.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
+import 'package:punch_app/data/utils/network_time.dart';
 
 class PermissionRepository {
   static const _permEmpSelect =

@@ -1,5 +1,5 @@
-import 'package:sri_hr/data/models/employee_status_model.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
+import 'package:punch_app/data/models/employee_status_model.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
 
 class EmployeeStatusRepository {
   Future<List<EmployeeStatusModel>> getStatuses(String companyId) async {

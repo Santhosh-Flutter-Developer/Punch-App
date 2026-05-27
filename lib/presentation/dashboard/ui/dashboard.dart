@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/dashboard/controller/dashboard_controller.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/attendance_fab.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/chart_row.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/greeting_bar.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/quick_actions.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/stats_grid.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/subscription_alert.dart';
-import 'package:sri_hr/widgets/app_shell.dart';
-import 'package:sri_hr/widgets/loading_overlay.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/dashboard/controller/dashboard_controller.dart';
+import 'package:punch_app/presentation/dashboard/widgets/attendance_fab.dart';
+import 'package:punch_app/presentation/dashboard/widgets/chart_row.dart';
+import 'package:punch_app/presentation/dashboard/widgets/greeting_bar.dart';
+import 'package:punch_app/presentation/dashboard/widgets/quick_actions.dart';
+import 'package:punch_app/presentation/dashboard/widgets/stats_grid.dart';
+import 'package:punch_app/presentation/dashboard/widgets/subscription_alert.dart';
+import 'package:punch_app/widgets/app_shell.dart';
+import 'package:punch_app/widgets/loading_overlay.dart';
 
 class Dashboard extends StatelessWidget {
   Dashboard({super.key});

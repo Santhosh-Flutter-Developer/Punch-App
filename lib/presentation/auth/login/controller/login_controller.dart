@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_grid/responsive_grid.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/auth/login/widgets/branding_panel.dart';
-import 'package:sri_hr/routes/app_routes.dart';
-import 'package:sri_hr/widgets/form_fields.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/auth/login/widgets/branding_panel.dart';
+import 'package:punch_app/routes/app_routes.dart';
+import 'package:punch_app/widgets/form_fields.dart';
 
 class LoginController extends GetxController {
   final loginformKey = GlobalKey<FormState>();
@@ -164,7 +164,7 @@ class LoginController extends GetxController {
           ),
           const SizedBox(height: 6),
           const Text(
-            'Sign in to your Sri HR account',
+            'Sign in to your Punch App account',
             style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
           ),
           // const SizedBox(height: 36),

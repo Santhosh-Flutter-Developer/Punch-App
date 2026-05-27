@@ -3,17 +3,17 @@ import 'package:get/get.dart';
 // import 'package:razorpay_flutter/razorpay_flutter.dart';
 // import 'package:razorpay_web/razorpay_flutter_web.dart' hide Razorpay;
 import 'package:razorpay_web/razorpay_web.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/subscription/controller/subscription_controller.dart';
-import 'package:sri_hr/presentation/subscription/widgets/current_plan_card.dart';
-import 'package:sri_hr/presentation/subscription/widgets/duration_toggle.dart';
-import 'package:sri_hr/presentation/subscription/widgets/payment_info.dart';
-import 'package:sri_hr/presentation/subscription/widgets/plans_grid.dart';
-import 'package:sri_hr/widgets/app_shell.dart';
-import 'package:sri_hr/widgets/empty_state.dart';
-import 'package:sri_hr/widgets/loading_overlay.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/utils/network_time.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/subscription/controller/subscription_controller.dart';
+import 'package:punch_app/presentation/subscription/widgets/current_plan_card.dart';
+import 'package:punch_app/presentation/subscription/widgets/duration_toggle.dart';
+import 'package:punch_app/presentation/subscription/widgets/payment_info.dart';
+import 'package:punch_app/presentation/subscription/widgets/plans_grid.dart';
+import 'package:punch_app/widgets/app_shell.dart';
+import 'package:punch_app/widgets/empty_state.dart';
+import 'package:punch_app/widgets/loading_overlay.dart';
 
 class Subscription extends StatefulWidget {
   const Subscription({super.key});
@@ -92,7 +92,7 @@ class _SubscriptionState extends State<Subscription> {
     final options = {
       'key': 'rzp_test_SjGIA59xh9bikb', // Replace with actual Razorpay key
       'amount': amount * 100, // paise
-      'name': 'Sri HR',
+      'name': 'Punch App',
       'description':
           '${plan['name'].toString().toUpperCase()} Plan – ${selectedDuration.capitalizeFirst}',
       'prefill': {

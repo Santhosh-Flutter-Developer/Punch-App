@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:sri_hr/routes/app_routes.dart';
+import 'package:punch_app/routes/app_routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashController extends GetxController {

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/designation/controller/role_controller.dart';
-import 'package:sri_hr/presentation/designation/ui/role_form.dart';
-import 'package:sri_hr/presentation/designation/widgets/permission_matrix.dart';
-import 'package:sri_hr/presentation/designation/widgets/role_card.dart';
-import 'package:sri_hr/widgets/app_shell.dart';
-import 'package:sri_hr/widgets/empty_state.dart';
-import 'package:sri_hr/widgets/loading_overlay.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
-import 'package:sri_hr/widgets/sri_search_bar.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/designation/controller/role_controller.dart';
+import 'package:punch_app/presentation/designation/ui/role_form.dart';
+import 'package:punch_app/presentation/designation/widgets/permission_matrix.dart';
+import 'package:punch_app/presentation/designation/widgets/role_card.dart';
+import 'package:punch_app/widgets/app_shell.dart';
+import 'package:punch_app/widgets/empty_state.dart';
+import 'package:punch_app/widgets/loading_overlay.dart';
+import 'package:punch_app/widgets/sri_button.dart';
+import 'package:punch_app/widgets/sri_search_bar.dart';
 
 class Designation extends StatelessWidget {
   Designation({super.key});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/company/controller/company_controller.dart';
-import 'package:sri_hr/presentation/company/ui/branch_tile.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/company/controller/company_controller.dart';
+import 'package:punch_app/presentation/company/ui/branch_tile.dart';
 
 class BranchList extends StatelessWidget {
   final CompanyController controller;

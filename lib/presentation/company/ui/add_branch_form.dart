@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_grid/responsive_grid.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/company/controller/company_controller.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
-import 'package:sri_hr/widgets/sri_textfield.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/company/controller/company_controller.dart';
+import 'package:punch_app/widgets/sri_button.dart';
+import 'package:punch_app/widgets/sri_textfield.dart';
 
 class AddBranchForm extends StatefulWidget {
   final CompanyController controller;

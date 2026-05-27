@@ -1,4 +1,4 @@
-import 'package:sri_hr/data/models/role_permission_model.dart';
+import 'package:punch_app/data/models/role_permission_model.dart';
 
 class RoleModel {
   final String id;

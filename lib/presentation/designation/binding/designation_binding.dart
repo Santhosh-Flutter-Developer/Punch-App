@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:sri_hr/presentation/company/controller/company_controller.dart';
-import 'package:sri_hr/presentation/designation/controller/role_controller.dart';
+import 'package:punch_app/presentation/company/controller/company_controller.dart';
+import 'package:punch_app/presentation/designation/controller/role_controller.dart';
 
 class DesignationBinding extends Bindings {
   @override

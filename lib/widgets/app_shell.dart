@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/widgets/narrow_layout.dart';
-import 'package:sri_hr/widgets/wide_layout.dart';
+import 'package:punch_app/widgets/narrow_layout.dart';
+import 'package:punch_app/widgets/wide_layout.dart';
 
 class AppShell extends StatelessWidget {
   final Widget child;

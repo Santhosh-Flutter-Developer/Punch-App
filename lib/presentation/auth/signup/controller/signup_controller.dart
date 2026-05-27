@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/services/sms_service.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
-import 'package:sri_hr/data/utils/otp_generator.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/auth/login/widgets/branding_panel.dart';
-import 'package:sri_hr/presentation/auth/signup/widgets/step_indicator.dart';
-import 'package:sri_hr/presentation/auth/signup/widgets/step_title.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
-import 'package:sri_hr/widgets/sri_card.dart';
-import 'package:sri_hr/widgets/sri_textfield.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/services/sms_service.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
+import 'package:punch_app/data/utils/otp_generator.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/auth/login/widgets/branding_panel.dart';
+import 'package:punch_app/presentation/auth/signup/widgets/step_indicator.dart';
+import 'package:punch_app/presentation/auth/signup/widgets/step_title.dart';
+import 'package:punch_app/widgets/sri_button.dart';
+import 'package:punch_app/widgets/sri_card.dart';
+import 'package:punch_app/widgets/sri_textfield.dart';
 
 class SignupController extends GetxController {
   final signupformKey = GlobalKey<FormState>();

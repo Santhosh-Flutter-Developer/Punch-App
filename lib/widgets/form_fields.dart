@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
-import 'package:sri_hr/widgets/sri_textfield.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/widgets/sri_button.dart';
+import 'package:punch_app/widgets/sri_textfield.dart';
 
 class FormFields extends StatelessWidget {
   final String? label;

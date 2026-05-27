@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/leave_request_model.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/helper/helper.dart';
-import 'package:sri_hr/presentation/leave/repository/leave_repository.dart';
-import 'package:sri_hr/presentation/leave/ui/leave_form_dialog.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/leave_request_model.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/presentation/leave/repository/leave_repository.dart';
+import 'package:punch_app/presentation/leave/ui/leave_form_dialog.dart';
 
 AuthController get auth => Get.find<AuthController>();
 

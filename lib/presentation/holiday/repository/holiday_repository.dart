@@ -1,5 +1,5 @@
-import 'package:sri_hr/data/models/holiday_model.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
+import 'package:punch_app/data/models/holiday_model.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
 
 class HolidayRepository {
   Future<List<HolidayModel>> getHolidays(String companyId, {int? year}) async {

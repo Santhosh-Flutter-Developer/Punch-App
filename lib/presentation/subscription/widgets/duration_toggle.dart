@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/subscription/widgets/toggle_btn.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/subscription/widgets/toggle_btn.dart';
 
 class DurationToggle extends StatelessWidget {
   final String selected;

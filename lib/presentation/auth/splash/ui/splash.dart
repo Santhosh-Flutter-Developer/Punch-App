@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/auth/splash/controller/splash_controller.dart';
-import 'package:sri_hr/widgets/app_linear_progress_indicator.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/auth/splash/controller/splash_controller.dart';
+import 'package:punch_app/widgets/app_linear_progress_indicator.dart';
 
 class Splash extends StatelessWidget {
   Splash({super.key});

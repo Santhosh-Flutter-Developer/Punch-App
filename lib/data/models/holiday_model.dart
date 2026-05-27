@@ -1,4 +1,4 @@
-import 'package:sri_hr/data/utils/network_time.dart';
+import 'package:punch_app/data/utils/network_time.dart';
 
 class HolidayModel {
   final String id;

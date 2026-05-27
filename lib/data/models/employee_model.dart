@@ -1,5 +1,5 @@
-import 'package:sri_hr/data/models/department_model.dart';
-import 'package:sri_hr/data/models/role_model.dart';
+import 'package:punch_app/data/models/department_model.dart';
+import 'package:punch_app/data/models/role_model.dart';
 
 enum Gender { male, female, other }
 

@@ -2,11 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/data/models/employee_status_model.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/employee_status/repository/employee_status_repository.dart';
-import 'package:sri_hr/presentation/employee_status/ui/employee_status_form.dart';
-import 'package:sri_hr/presentation/helper/helper.dart';
+import 'package:punch_app/data/models/employee_status_model.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/employee_status/repository/employee_status_repository.dart';
+import 'package:punch_app/presentation/employee_status/ui/employee_status_form.dart';
+import 'package:punch_app/presentation/helper/helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 AuthController get auth => Get.find<AuthController>();

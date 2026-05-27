@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
 
 class MiniPunchTag extends StatelessWidget {
   final String type, time;

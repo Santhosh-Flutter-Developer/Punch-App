@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:responsive_grid/responsive_grid.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/company_model.dart';
-import 'package:sri_hr/presentation/company/controller/company_controller.dart';
-import 'package:sri_hr/presentation/company/widgets/sri_detail_card.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
-import 'package:sri_hr/widgets/sri_textfield.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/company_model.dart';
+import 'package:punch_app/presentation/company/controller/company_controller.dart';
+import 'package:punch_app/presentation/company/widgets/sri_detail_card.dart';
+import 'package:punch_app/widgets/sri_button.dart';
+import 'package:punch_app/widgets/sri_textfield.dart';
 
 class CompanyDetail extends StatefulWidget {
   final CompanyModel company;

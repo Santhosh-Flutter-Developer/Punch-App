@@ -8,15 +8,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sri_hr/core/constants/app_constants.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/employee_model.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/employee/repository/employee_repository.dart';
-import 'package:sri_hr/presentation/employee/ui/employee_form_page.dart';
-import 'package:sri_hr/presentation/helper/helper.dart';
+import 'package:punch_app/core/constants/app_constants.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/employee_model.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
+import 'package:punch_app/data/utils/network_time.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/employee/repository/employee_repository.dart';
+import 'package:punch_app/presentation/employee/ui/employee_form_page.dart';
+import 'package:punch_app/presentation/helper/helper.dart';
 
 AuthController get auth => Get.find<AuthController>();
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/data/models/subscription_model.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/company/controller/company_controller.dart';
-import 'package:sri_hr/presentation/company/ui/company_body.dart';
-import 'package:sri_hr/presentation/company/widgets/error_widget.dart';
-import 'package:sri_hr/widgets/app_shell.dart';
-import 'package:sri_hr/widgets/loading_overlay.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
+import 'package:punch_app/data/models/subscription_model.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/company/controller/company_controller.dart';
+import 'package:punch_app/presentation/company/ui/company_body.dart';
+import 'package:punch_app/presentation/company/widgets/error_widget.dart';
+import 'package:punch_app/widgets/app_shell.dart';
+import 'package:punch_app/widgets/loading_overlay.dart';
+import 'package:punch_app/widgets/sri_button.dart';
 
 class Company extends StatelessWidget {
   Company({super.key});

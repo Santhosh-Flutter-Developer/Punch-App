@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_grid/responsive_grid.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/quick_btn.dart';
-import 'package:sri_hr/presentation/dashboard/widgets/section_header.dart';
-import 'package:sri_hr/routes/app_routes.dart';
-import 'package:sri_hr/widgets/sri_card.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/dashboard/widgets/quick_btn.dart';
+import 'package:punch_app/presentation/dashboard/widgets/section_header.dart';
+import 'package:punch_app/routes/app_routes.dart';
+import 'package:punch_app/widgets/sri_card.dart';
 
 class QuickActions extends StatelessWidget {
   QuickActions({super.key});

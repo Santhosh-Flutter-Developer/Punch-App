@@ -2,15 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:sri_hr/core/constants/app_constants.dart';
-import 'package:sri_hr/data/models/role_model.dart';
-import 'package:sri_hr/data/models/role_permission_model.dart';
-import 'package:sri_hr/data/models/subscription_model.dart';
-import 'package:sri_hr/data/models/user_model.dart';
-import 'package:sri_hr/presentation/auth/repository/auth_repository.dart';
-import 'package:sri_hr/presentation/employee/repository/employee_repository.dart';
-import 'package:sri_hr/presentation/subscription/repository/subscription_repository.dart';
-import 'package:sri_hr/routes/app_routes.dart';
+import 'package:punch_app/core/constants/app_constants.dart';
+import 'package:punch_app/data/models/role_model.dart';
+import 'package:punch_app/data/models/role_permission_model.dart';
+import 'package:punch_app/data/models/subscription_model.dart';
+import 'package:punch_app/data/models/user_model.dart';
+import 'package:punch_app/presentation/auth/repository/auth_repository.dart';
+import 'package:punch_app/presentation/employee/repository/employee_repository.dart';
+import 'package:punch_app/presentation/subscription/repository/subscription_repository.dart';
+import 'package:punch_app/routes/app_routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthController extends GetxController {

@@ -1,5 +1,5 @@
-import 'package:sri_hr/data/models/employee_model.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
+import 'package:punch_app/data/models/employee_model.dart';
+import 'package:punch_app/data/utils/network_time.dart';
 
 enum PunchType { in_, out }
 

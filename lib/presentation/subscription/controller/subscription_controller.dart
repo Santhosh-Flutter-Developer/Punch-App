@@ -1,11 +1,11 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
-import 'package:sri_hr/data/models/subscription_model.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
-import 'package:sri_hr/presentation/helper/helper.dart';
-import 'package:sri_hr/presentation/subscription/repository/subscription_repository.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/data/models/subscription_model.dart';
+import 'package:punch_app/data/utils/network_time.dart';
+import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/presentation/subscription/repository/subscription_repository.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -77,7 +77,7 @@ class SubscriptionController extends GetxController {
       authCtrl.isSubscriptionActive.value = true;
 
       showSuccess(
-        'Subscription activated! Enjoy ${duration == 'yearly' ? '1 Year' : '30 Days'} of Sri HR.',
+        'Subscription activated! Enjoy ${duration == 'yearly' ? '1 Year' : '30 Days'} of Punch App.',
       );
     } catch (e) {
       showError('Subscription failed: $e');

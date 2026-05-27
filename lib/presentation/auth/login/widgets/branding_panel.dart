@@ -32,7 +32,7 @@ class BrandingPanel extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Text(
-                'Sri HR',
+                'Punch App',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: isWide ? 28.0 : 24.0,

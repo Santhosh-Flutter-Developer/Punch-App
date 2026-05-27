@@ -1,4 +1,4 @@
-name: sri_hr
+name: punch_app
 description: "A new Flutter project."
 publish_to: 'none'
 version: 1.0.0+1
@@ -93,7 +93,7 @@ flutter:
     - .env
 
   fonts:
-    - family: SriHR
+    - family: PunchApp
       fonts:
         - asset: assets/fonts/Nunito-Regular.ttf
         - asset: assets/fonts/Nunito-Bold.ttf

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/company_model.dart';
-import 'package:sri_hr/presentation/company/controller/company_controller.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/company_model.dart';
+import 'package:punch_app/presentation/company/controller/company_controller.dart';
 
 class BranchTile extends StatelessWidget {
   final CompanyModel company;

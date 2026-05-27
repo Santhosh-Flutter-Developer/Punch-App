@@ -2,12 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/data/models/holiday_model.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/helper/helper.dart';
-import 'package:sri_hr/presentation/holiday/repository/holiday_repository.dart';
-import 'package:sri_hr/presentation/holiday/ui/holiday_form.dart';
+import 'package:punch_app/data/models/holiday_model.dart';
+import 'package:punch_app/data/utils/network_time.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/presentation/holiday/repository/holiday_repository.dart';
+import 'package:punch_app/presentation/holiday/ui/holiday_form.dart';
 
 AuthController get auth => Get.find<AuthController>();
 

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/presentation/attendance/controller/attendance_controller.dart';
-import 'package:sri_hr/presentation/attendance/widgets/date_range_strip.dart';
-import 'package:sri_hr/presentation/attendance/widgets/grid_view.dart';
-import 'package:sri_hr/presentation/attendance/widgets/summary_strip.dart';
-import 'package:sri_hr/presentation/attendance/widgets/table_view.dart';
-import 'package:sri_hr/presentation/attendance/widgets/view_toggle_btn.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/widgets/app_shell.dart';
-import 'package:sri_hr/widgets/empty_state.dart';
-import 'package:sri_hr/widgets/loading_overlay.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/presentation/attendance/controller/attendance_controller.dart';
+import 'package:punch_app/presentation/attendance/widgets/date_range_strip.dart';
+import 'package:punch_app/presentation/attendance/widgets/grid_view.dart';
+import 'package:punch_app/presentation/attendance/widgets/summary_strip.dart';
+import 'package:punch_app/presentation/attendance/widgets/table_view.dart';
+import 'package:punch_app/presentation/attendance/widgets/view_toggle_btn.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/widgets/app_shell.dart';
+import 'package:punch_app/widgets/empty_state.dart';
+import 'package:punch_app/widgets/loading_overlay.dart';
+import 'package:punch_app/widgets/sri_button.dart';
 
 class Attendance extends StatelessWidget {
   Attendance({super.key});

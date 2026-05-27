@@ -2,13 +2,13 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/data/models/dashboard_stats_model.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
-import 'package:sri_hr/presentation/attendance/repository/attendance_repository.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/employee/repository/employee_repository.dart';
-import 'package:sri_hr/presentation/leave/repository/leave_repository.dart';
+import 'package:punch_app/data/models/dashboard_stats_model.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
+import 'package:punch_app/data/utils/network_time.dart';
+import 'package:punch_app/presentation/attendance/repository/attendance_repository.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/employee/repository/employee_repository.dart';
+import 'package:punch_app/presentation/leave/repository/leave_repository.dart';
 
 AuthController get auth => Get.find<AuthController>();
 

@@ -2,14 +2,14 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
-import 'package:sri_hr/presentation/attendance/controller/attendance_controller.dart';
-import 'package:sri_hr/presentation/attendance/widgets/picker_box.dart';
-import 'package:sri_hr/presentation/attendance/widgets/punch_type_btn.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/employee/controller/employee_controller.dart';
-import 'package:sri_hr/presentation/helper/helper.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/utils/network_time.dart';
+import 'package:punch_app/presentation/attendance/controller/attendance_controller.dart';
+import 'package:punch_app/presentation/attendance/widgets/picker_box.dart';
+import 'package:punch_app/presentation/attendance/widgets/punch_type_btn.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/employee/controller/employee_controller.dart';
+import 'package:punch_app/presentation/helper/helper.dart';
 
 class PunchFormDialog extends StatefulWidget {
   final AttendanceController controller;

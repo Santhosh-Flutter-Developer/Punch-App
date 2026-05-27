@@ -1,6 +1,6 @@
 // lib/data/repositories/auth_repository.dart
 import 'package:flutter/foundation.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepository {

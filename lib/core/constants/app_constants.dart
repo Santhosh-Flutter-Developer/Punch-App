@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String appName = 'Sri HR';
+  static const String appName = 'Punch App';
   static const String appVersion = '1.0.0';
 
   // Supabase – set in .env

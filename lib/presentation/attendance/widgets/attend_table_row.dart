@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/data/models/attendance_log_model.dart';
-import 'package:sri_hr/presentation/attendance/widgets/time_tag.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/data/models/attendance_log_model.dart';
+import 'package:punch_app/presentation/attendance/widgets/time_tag.dart';
 
 class AttendTableRow extends StatelessWidget {
   final Map<String, dynamic> row;

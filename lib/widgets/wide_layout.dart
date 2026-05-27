@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/widgets/sidebar_widget.dart';
-import 'package:sri_hr/widgets/top_bar.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/widgets/sidebar_widget.dart';
+import 'package:punch_app/widgets/top_bar.dart';
 
 class WideLayout extends StatelessWidget {
   final Widget child;

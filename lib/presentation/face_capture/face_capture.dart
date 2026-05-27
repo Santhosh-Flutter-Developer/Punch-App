@@ -8,8 +8,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/core/theme/app_colors.dart';
-import 'package:sri_hr/widgets/sri_button.dart';
+import 'package:punch_app/core/theme/app_colors.dart';
+import 'package:punch_app/widgets/sri_button.dart';
 
 enum ViewMode {
   MODE_NONE,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sri_hr/data/models/permission_request_model.dart';
-import 'package:sri_hr/data/services/supabase_service.dart';
-import 'package:sri_hr/data/utils/network_time.dart';
-import 'package:sri_hr/presentation/auth/controller/auth_controller.dart';
-import 'package:sri_hr/presentation/helper/helper.dart';
-import 'package:sri_hr/presentation/permission_request/repository/permission_request_repository.dart';
-import 'package:sri_hr/presentation/permission_request/ui/permission_form_dialog.dart';
+import 'package:punch_app/data/models/permission_request_model.dart';
+import 'package:punch_app/data/services/supabase_service.dart';
+import 'package:punch_app/data/utils/network_time.dart';
+import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/presentation/permission_request/repository/permission_request_repository.dart';
+import 'package:punch_app/presentation/permission_request/ui/permission_form_dialog.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
