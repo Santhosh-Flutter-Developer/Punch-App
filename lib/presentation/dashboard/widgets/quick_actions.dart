@@ -37,20 +37,20 @@ class QuickActions extends StatelessWidget {
                     onTap: () => Get.toNamed(AppRoutes.routeEmployee),
                   ),
                 ),
-              if (auth.canView("leave_request"))
-                ResponsiveGridCol(
-                  xl: 2,
-                  lg: 2,
-                  md: 3,
-                  xs: 6,
-                  sm: 6,
-                  child: QuickBtn(
-                    icon: Icons.event_busy_rounded,
-                    label: 'Leave Requests',
-                    color: AppColors.warning,
-                    onTap: () => Get.toNamed(AppRoutes.routeLeave),
-                  ),
-                ),
+              // if (auth.canView("leave_request"))
+              //   ResponsiveGridCol(
+              //     xl: 2,
+              //     lg: 2,
+              //     md: 3,
+              //     xs: 6,
+              //     sm: 6,
+              //     child: QuickBtn(
+              //       icon: Icons.event_busy_rounded,
+              //       label: 'Leave Requests',
+              //       color: AppColors.warning,
+              //       onTap: () => Get.toNamed(AppRoutes.routeLeave),
+              //     ),
+              //   ),
               if (auth.canView("attendance_report"))
                 ResponsiveGridCol(
                   xl: 2,
@@ -65,20 +65,20 @@ class QuickActions extends StatelessWidget {
                     onTap: () => Get.toNamed(AppRoutes.routeAttendance),
                   ),
                 ),
-              if (auth.canView("punch_adjustment"))
-                ResponsiveGridCol(
-                  xl: 2,
-                  lg: 2,
-                  md: 3,
-                  xs: 6,
-                  sm: 6,
-                  child: QuickBtn(
-                    icon: Icons.tune_rounded,
-                    label: 'Punch Adjust',
-                    color: AppColors.accentGreen,
-                    onTap: () => Get.toNamed(AppRoutes.routePunchAdjustment),
-                  ),
-                ),
+              // if (auth.canView("punch_adjustment"))
+              //   ResponsiveGridCol(
+              //     xl: 2,
+              //     lg: 2,
+              //     md: 3,
+              //     xs: 6,
+              //     sm: 6,
+              //     child: QuickBtn(
+              //       icon: Icons.tune_rounded,
+              //       label: 'Punch Adjust',
+              //       color: AppColors.accentGreen,
+              //       onTap: () => Get.toNamed(AppRoutes.routePunchAdjustment),
+              //     ),
+              //   ),
             ],
           ),
         ],
