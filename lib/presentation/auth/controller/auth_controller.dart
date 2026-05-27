@@ -195,7 +195,6 @@ class AuthController extends GetxController {
   Future<void> _loadPermissionsAndSubscription() async {
     final user = currentUser.value;
     if (user == null) return;
-
     // Load permissions
     if (user.roleId != null) {
       // Always load role-based permissions — even for admin users.
@@ -205,6 +204,19 @@ class AuthController extends GetxController {
         for (final p in perms.map((r) => RolePermissionModel.fromJson(r)))
           p.module: p,
       };
+    } else if (user.roleId == null) {
+      for (final module in AppConstants.modules) {
+        permissions[module] = RolePermissionModel(
+          id: '',
+          companyId: user.companyId,
+          roleId: '',
+          module: module,
+          canView: true,
+          canAdd: true,
+          canEdit: true,
+          canDelete: true,
+        );
+      }
     } else if (user.isAdmin) {
       // Admin with NO role assigned gets full access to everything
       for (final module in AppConstants.modules) {
