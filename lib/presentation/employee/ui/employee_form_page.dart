@@ -1087,7 +1087,8 @@ class _StepBasicState extends State<_StepBasic> {
           ),
           const SizedBox(height: 16),
           _SectionCard(
-            title: 'Status & Salary',
+            title: 'Status',
+            // title: 'Status & Salary',
             icon: Icons.payments_rounded,
             children: [
               ResponsiveGridRow(
@@ -1126,7 +1127,7 @@ class _StepBasicState extends State<_StepBasic> {
                       );
                     }),
                   ),
-                  ResponsiveGridCol(
+                  /*ResponsiveGridCol(
                     xl: 6,
                     lg: 6,
                     md: 6,
@@ -1162,7 +1163,7 @@ class _StepBasicState extends State<_StepBasic> {
                         ),
                       );
                     }),
-                  ),
+                  ),*/
                 ],
               ),
             ],
@@ -1314,7 +1315,8 @@ class _StepWork extends StatelessWidget {
       child: Column(
         children: [
           _SectionCard(
-            title: 'Company & Department',
+            title: 'Company',
+            // title: 'Company & Department',
             icon: Icons.business_rounded,
             children: [
               ResponsiveGridRow(
@@ -1385,7 +1387,7 @@ class _StepWork extends StatelessWidget {
                       );
                     }),
                   ),
-                  ResponsiveGridCol(
+                  /*ResponsiveGridCol(
                     xl: 6,
                     lg: 6,
                     md: 6,
@@ -1450,7 +1452,7 @@ class _StepWork extends StatelessWidget {
                         ),
                       );
                     }),
-                  ),
+                  ),*/
                 ],
               ),
             ],

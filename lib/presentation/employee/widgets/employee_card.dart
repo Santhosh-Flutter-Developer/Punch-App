@@ -91,41 +91,41 @@ class EmployeeCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.account_tree_outlined,
-                        size: 12,
-                        color: AppColors.textMuted,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        employee.department?.name ?? '—',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.badge_outlined,
-                        size: 12,
-                        color: AppColors.textMuted,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        employee.role?.name ?? '—',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     const Icon(
+                  //       Icons.account_tree_outlined,
+                  //       size: 12,
+                  //       color: AppColors.textMuted,
+                  //     ),
+                  //     const SizedBox(width: 4),
+                  //     Text(
+                  //       employee.department?.name ?? '—',
+                  //       style: const TextStyle(
+                  //         fontSize: 12,
+                  //         color: AppColors.textSecondary,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 4),
+                  // Row(
+                  //   children: [
+                  //     const Icon(
+                  //       Icons.badge_outlined,
+                  //       size: 12,
+                  //       color: AppColors.textMuted,
+                  //     ),
+                  //     const SizedBox(width: 4),
+                  //     Text(
+                  //       employee.role?.name ?? '—',
+                  //       style: const TextStyle(
+                  //         fontSize: 12,
+                  //         color: AppColors.textSecondary,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                   if (employee.mobile != null) ...[
                     const SizedBox(height: 4),
                     Row(
