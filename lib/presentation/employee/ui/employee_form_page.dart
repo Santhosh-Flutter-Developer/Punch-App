@@ -21,7 +21,7 @@ import 'package:punch_app/presentation/department/controller/department_controll
 import 'package:punch_app/presentation/designation/controller/role_controller.dart';
 import 'package:punch_app/presentation/employee/controller/employee_controller.dart';
 import 'package:punch_app/presentation/employee_status/controller/employee_status_controller.dart';
-import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/data/helper/helper.dart';
 import 'package:punch_app/presentation/salary_type/controller/salary_type_controller.dart';
 import 'package:punch_app/routes/app_routes.dart';
 import 'package:punch_app/widgets/app_shell.dart';

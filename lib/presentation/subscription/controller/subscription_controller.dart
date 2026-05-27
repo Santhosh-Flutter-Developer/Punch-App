@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:punch_app/data/models/subscription_model.dart';
 import 'package:punch_app/data/utils/network_time.dart';
-import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/data/helper/helper.dart';
 import 'package:punch_app/presentation/subscription/repository/subscription_repository.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 

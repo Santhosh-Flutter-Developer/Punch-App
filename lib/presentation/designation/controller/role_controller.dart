@@ -5,7 +5,7 @@ import 'package:punch_app/data/models/role_model.dart';
 import 'package:punch_app/data/models/role_permission_model.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/presentation/designation/repository/role_repository.dart';
-import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/data/helper/helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 AuthController get auth => Get.find<AuthController>();

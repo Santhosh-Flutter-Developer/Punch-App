@@ -16,7 +16,7 @@ import 'package:punch_app/data/utils/network_time.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/presentation/employee/repository/employee_repository.dart';
 import 'package:punch_app/presentation/employee/ui/employee_form_page.dart';
-import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/data/helper/helper.dart';
 
 AuthController get auth => Get.find<AuthController>();
 

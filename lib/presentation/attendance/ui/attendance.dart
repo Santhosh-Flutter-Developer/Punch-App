@@ -72,12 +72,18 @@ class Attendance extends StatelessWidget {
                   icon: Icon(Icons.filter_list_rounded),
                 ),
           const SizedBox(width: 10.0),
-          // SriButton(
-          //   label: "Export",
-          //   onPressed: () => controller.exportCSV(context, controller),
-          //   icon: Icons.download_rounded,
-          // ),
-          // const SizedBox(width: 16.0),
+          isWide
+              ? SriButton(
+                  label: "Export",
+                  onPressed: () => controller.showExportMenu(context),
+                  icon: Icons.download_rounded,
+                )
+              : IconButton(
+                  onPressed: () => controller.showExportMenu(context),
+                  icon: const Icon(Icons.download_rounded),
+                  tooltip: 'Export',
+                ),
+          const SizedBox(width: 8.0),
         ],
         child: Column(
           children: [

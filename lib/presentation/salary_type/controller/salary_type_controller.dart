@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:punch_app/data/models/salary_type_model.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
-import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/data/helper/helper.dart';
 import 'package:punch_app/presentation/salary_type/repository/salary_type_repository.dart';
 import 'package:punch_app/presentation/salary_type/ui/salary_type_form.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

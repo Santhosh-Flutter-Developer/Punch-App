@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/attendance_log_model.dart';
+import 'package:punch_app/data/services/attendance_export_service.dart';
 import 'package:punch_app/data/services/supabase_service.dart';
 import 'package:punch_app/data/utils/network_time.dart';
 import 'package:punch_app/presentation/attendance/repository/attendance_repository.dart';
+import 'package:punch_app/presentation/attendance/widgets/export_format_dialog.dart';
 import 'package:punch_app/presentation/attendance/widgets/filter_sheet.dart';
 import 'package:punch_app/presentation/attendance/widgets/punch_form_dialog.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
-import 'package:punch_app/presentation/helper/helper.dart';
+import 'package:punch_app/data/helper/helper.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -236,7 +238,7 @@ class AttendanceController extends GetxController {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Attendance Log'),
+        title: const Text('Delete Holiday'),
         content: const Text('Are you sure you want to delete this record?'),
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
@@ -265,14 +267,99 @@ class AttendanceController extends GetxController {
 
   String formatDate(DateTime d) => '${d.day}/${d.month}/${d.year}';
 
-  void showExportMenu(BuildContext context) {
-    Get.snackbar(
-      'Export',
-      'Export functionality – connect your preferred export library',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.info,
-      colorText: Colors.white,
+  Future<void> showExportMenu(BuildContext context) async {
+    final rows = groupedByEmployeeDate;
+    if (rows.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No data to export'),
+          backgroundColor: AppColors.warning,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+ 
+    final format = await showDialog<ExportFormat>(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => const ExportFormatDialog(),
     );
+ 
+    if (format == null || !context.mounted) return;
+ 
+    final companyName = 'Attendance Report';
+    final from = fromDate.value ?? DateTime.now();
+    final to = toDate.value ?? DateTime.now();
+ 
+    try {
+      if (format == ExportFormat.pdf) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                SizedBox(
+                  width: 18, height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Colors.white,
+                  ),
+                ),
+                SizedBox(width: 12),
+                Text('Generating PDF...'),
+              ],
+            ),
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: AppColors.info,
+          ),
+        );
+        await AttendanceExportService.exportPDF(
+          context: context,
+          rows: rows,
+          fromDate: from,
+          toDate: to,
+          companyName: companyName,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                SizedBox(
+                  width: 18, height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Colors.white,
+                  ),
+                ),
+                SizedBox(width: 12),
+                Text('Generating Excel...'),
+              ],
+            ),
+            duration: Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: AppColors.info,
+          ),
+        );
+        await AttendanceExportService.exportExcel(
+          context: context,
+          rows: rows,
+          fromDate: from,
+          toDate: to,
+          companyName: companyName,
+        );
+      }
+    } catch (e) {
+      debugPrint('[Export] error: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Export failed: $e'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   void showForm(
@@ -334,7 +421,7 @@ class AttendanceController extends GetxController {
         '"$code","$name","$dateStr","$inStr","$outStr","$hrs","$isManual"',
       );
     }
-
+ 
     // Download/show CSV
     if (kIsWeb) {
       // Web: trigger download via anchor
