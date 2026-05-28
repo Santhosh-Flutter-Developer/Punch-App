@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-// Web stub — file writing is handled via browser download, not dart:io
-Future<void> writeFileBytes(String path, Uint8List bytes) async {
-  // no-op on web
-}
+// Web stub — file saving is handled via browser download in download_helper.dart
+Future<void> writeFileBytes(String path, Uint8List bytes) async {}
+
+Future<void> saveToDownloadsAndShare(Uint8List bytes, String filename) async {}

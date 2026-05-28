@@ -13,9 +13,10 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:excel/excel.dart';
 
 // ─── File I/O ─────────────────────────────────────────────────────────
-import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
-
+// import 'package:punch_app/presentation/attendance/services/file_helper_web.dart'
+//     if (dart.library.io) 'package:punch_app/presentation/attendance/services/file_helper_native.dart';
+// import 'package:punch_app/presentation/attendance/services/download_helper_stub.dart'
+//     if (dart.library.html) 'package:punch_app/presentation/attendance/services/download_helper.dart';
 
 class AttendanceExportService {
   // ─────────────────────────── helpers ──────────────────────────────────────
@@ -575,21 +576,8 @@ class AttendanceExportService {
         );
       }
     } else {
-      // Mobile / Desktop: save to documents then open
-      final dir  = await getApplicationDocumentsDirectory();
-      final path = '${dir.path}/$filename';
-      await writeFileBytes(path, bytes);
-      await OpenFile.open(path);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Saved: $filename'),
-            backgroundColor: const Color(0xFF22C55E),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+      // Mobile: save to Downloads (Android) / temp (iOS) then show share sheet
+      await saveToDownloadsAndShare(bytes, filename);
     }
   }
 
