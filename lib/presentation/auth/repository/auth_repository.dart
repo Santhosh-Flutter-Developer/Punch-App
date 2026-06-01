@@ -1,9 +1,44 @@
 // lib/data/repositories/auth_repository.dart
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:punch_app/data/services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepository {
+  // ── KIOSK LOGIN CHECK ─────────────────────────────────────
+  /// Returns company_id if the given username+password match a kiosk account,
+  /// otherwise returns null.
+  Future<String?> checkKioskLogin(String username, String password) async {
+    try {
+      final result = await SupabaseService.client.rpc(
+        'check_kiosk_login',
+        params: {'p_username': username, 'p_password': password},
+      );
+      if (result != null && result.toString().isNotEmpty) {
+        return result.toString();
+      }
+    } catch (e) {
+      debugPrint('[AuthRepo] checkKioskLogin error: $e');
+    }
+    return null;
+  }
+
+  /// Signs in with a dedicated kiosk Supabase account
+  /// so RLS policies work for kiosk queries.
+  Future<void> signInKioskSession() async {
+    try {
+      final session = SupabaseService.client.auth.currentSession;
+      if (session != null) return; // already signed in
+      await SupabaseService.client.auth.signInWithPassword(
+        email: 'kiosk@srisoftwarez.com', // 👈 your dedicated kiosk email
+        password: 'Admin123@', // 👈 your dedicated kiosk password
+      );
+    } catch (e) {
+      log('signInKioskSession error: $e');
+    }
+  }
+
   // ── LOGIN ─────────────────────────────────────────────────
   Future<Map<String, dynamic>> login(
     String emailOrUsername,
@@ -152,6 +187,7 @@ class AuthRepository {
         .select()
         .eq('company_id', companyId)
         .order('created_at', ascending: false)
+        .limit(1) // ✅ only latest subscription
         .maybeSingle();
   }
 }

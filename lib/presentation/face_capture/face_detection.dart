@@ -19,16 +19,17 @@ import 'package:punch_app/presentation/attendance/controller/attendance_controll
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/presentation/company/controller/company_controller.dart';
 import 'package:punch_app/presentation/employee/controller/employee_controller.dart';
+import 'package:punch_app/presentation/employee/repository/employee_repository.dart';
 import 'package:punch_app/routes/app_routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
-class FaceRecognitionView extends StatefulWidget {
+class FaceDetection extends StatefulWidget {
   FaceDetectionViewController? faceDetectionViewController;
-  FaceRecognitionView({super.key});
+  FaceDetection({super.key});
 
   @override
-  State<FaceRecognitionView> createState() => FaceRecognitionViewState();
+  State<FaceDetection> createState() => FaceRecognitionViewState();
 }
 
 final employeeController = Get.isRegistered<EmployeeController>()
@@ -45,9 +46,9 @@ final attendanceController = Get.isRegistered<AttendanceController>()
 
 final _uuid = const Uuid();
 
-RxList<EmployeeModel> employees = <EmployeeModel>[].obs;
+RxList<EmployeeModel> allEmployees = <EmployeeModel>[].obs;
 
-class FaceRecognitionViewState extends State<FaceRecognitionView> {
+class FaceRecognitionViewState extends State<FaceDetection> {
   final location = Get.isRegistered<LocationService>()
       ? Get.find<LocationService>()
       : Get.put(LocationService());
@@ -83,7 +84,7 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
     super.initState();
     init();
     loadSettings();
-    getEmployee();
+    getAllEmployee();
     _loadNotifLang();
   }
 
@@ -92,11 +93,8 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
     try {
       // Give employee a moment to load
       await Future.delayed(const Duration(milliseconds: 400));
-      final compId = employee?.companyId.isNotEmpty == true
-          ? employee!.companyId
-          : auth.companyId;
-      if (compId.isEmpty) return;
-      final comp = await companyController.getCompany(compId);
+      if (auth.kioskCompId.value.isEmpty) return;
+      final comp = await companyController.getCompany(auth.kioskCompId.value);
       if (comp != null && mounted) {
         setState(() => _notifLang = comp.notificationLanguage);
       }
@@ -201,6 +199,13 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
     });
   }
 
+  Future<void> getAllEmployee() async {
+    final employees = await EmployeeRepository().getAllEmployees(
+      auth.kioskCompId.value,
+    );
+    allEmployees.value = employees;
+  }
+
   Future<void> getEmployee() async {
     employee = await employeeController.getEmployee(auth.userId);
   }
@@ -230,33 +235,43 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
         );
       }
       var face = faces[0];
-
-      String storedTemplateString = employee?.profileTemplate ?? '';
-      if (storedTemplateString == '') {
+      if (allEmployees.isEmpty) {
         faceDetectionViewController?.stopCamera();
         _audio.play(AttendanceAudioEvent.faceNotRegistered, _notifLang); // 🔊
         Get.back();
         Get.snackbar(
           'Warning',
-          'Logged-in user\'s face is not registered in the employee records',
+          'No employees with registered faces found in this company',
           backgroundColor: AppColors.warning,
         );
         return false;
       }
-      Uint8List storedTemplate = base64Decode(storedTemplateString);
-      double similarity =
-          await _facesdkPlugin.similarityCalculation(
-            face['templates'],
-            storedTemplate,
-          ) ??
-          -1;
 
-      if (maxSimilarity < similarity) {
-        maxSimilarity = similarity;
-        maxSimilarityName = employee!.fullName;
-        maxLiveness = face['liveness'];
-        identifiedFace = face['faceJpg'];
-        enrolledFace = employee!.profilePicture;
+      EmployeeModel? matchedEmployee;
+
+      for (final emp in allEmployees) {
+        String storedTemplateString = emp.profileTemplate ?? '';
+        if (storedTemplateString.isEmpty) continue;
+        Uint8List storedTemplate = base64Decode(storedTemplateString);
+        double similarity =
+            await _facesdkPlugin.similarityCalculation(
+              face['templates'],
+              storedTemplate,
+            ) ??
+            -1;
+
+        if (maxSimilarity < similarity) {
+          maxSimilarity = similarity;
+          maxSimilarityName = emp.fullName;
+          maxLiveness = face['liveness'];
+          identifiedFace = face['faceJpg'];
+          enrolledFace = emp.profilePicture;
+          matchedEmployee = emp;
+        }
+      }
+
+      if (matchedEmployee != null) {
+        employee = matchedEmployee;
       }
 
       if (showToast == true) {
@@ -267,7 +282,6 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
             setState(() {
               faceRecognized = true;
             });
-
             Get.back();
             _audio.play(AttendanceAudioEvent.noFaceMatched, _notifLang); // 🔊
             Get.snackbar(
@@ -305,7 +319,7 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
       }
 
       // ── Check geofence ───────────────────────────────────
-      final compId = employee!.companyId;
+      final compId = auth.kioskCompId.value;
       final comp = await companyController.getCompany(compId);
       if (!mounted) return false;
       if (comp != null) {
@@ -323,11 +337,9 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
                 locationCheck = true;
                 faceRecognized = true;
               });
-
               faceDetectionViewController?.stopCamera();
-
-              Get.back();
               _audio.play(AttendanceAudioEvent.outsideOffice, _notifLang); // 🔊
+              Get.back();
               Get.snackbar(
                 'Warning',
                 'You are outside the office location',
@@ -377,7 +389,6 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
           faceUrl = await uploadAttendanceImage(imageFile, const Uuid().v4());
         }
         if (!mounted) return false;
-
         if (employee == null || comp == null) {
           _audio.play(AttendanceAudioEvent.employeeNotFound, _notifLang); // 🔊
           Get.snackbar(
@@ -392,15 +403,12 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
           setState(() => callApi = false);
           await NetworkTime.syncTime();
           if (!mounted) return false;
-
           // ── Load today's punch history ────────────────────
           await _loadTodayLogs();
           if (!mounted) return false;
-
           // ── Show punch selector sheet ─────────────────────
-          
-            await _showPunchSelectorSheet();
-          
+
+          await _showPunchSelectorSheet();
         }
       }
     });
@@ -453,11 +461,10 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
           setState(() {
             _recognized = false;
             faceRecognized = false;
-            locationCheck = false;
             callApi = true;
             showToast = true;
           });
-          Get.offAllNamed(AppRoutes.routeDashboard);
+          Get.offAllNamed(AppRoutes.routeKioskAttendance);
         },
       ),
     );
@@ -468,6 +475,7 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
       await attendanceController.adjustPunch(
         {
           'employee_id': employee!.id,
+          'company_id': employee!.companyId,
           'date': NetworkTime.now().toIso8601String().substring(0, 10),
           'punch_time': NetworkTime.now().toIso8601String(),
           'punch_type': punchType,
@@ -477,7 +485,6 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
         showToast: false,
         isManual: false,
       );
-
       final label = punchType == 'in' ? 'Punch IN' : 'Punch OUT';
       if (attendanceController.showErr.value) {
         // 🔊 Play punch success audio
@@ -509,7 +516,7 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
     }
 
     await Future.delayed(const Duration(seconds: 4));
-    Get.offAllNamed(AppRoutes.routeDashboard);
+    Get.offAllNamed(AppRoutes.routeKioskAttendance);
   }
 
   Future<String?> uploadAttendanceImage(

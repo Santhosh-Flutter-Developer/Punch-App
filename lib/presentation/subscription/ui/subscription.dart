@@ -90,7 +90,7 @@ class _SubscriptionState extends State<Subscription> {
 
     setState(() => selectedPlan = plan);
     final options = {
-      'key': 'rzp_test_SjGIA59xh9bikb', // Replace with actual Razorpay key
+      'key': 'rzp_test_y39e77fs8dP9SV', // Replace with actual Razorpay key
       'amount': amount * 100, // paise
       'name': 'Punch App',
       'description':

@@ -1,4 +1,3 @@
-// lib/presentation/controllers/auth_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -29,6 +28,7 @@ class AuthController extends GetxController {
   // Reactive company ID — updates when branch is switched
   // All controllers must use this instead of currentUser.value?.companyId
   final activeCompanyId = ''.obs;
+  final RxString kioskCompId = "".obs;
 
   // Computed
   String get companyId => activeCompanyId.value.isNotEmpty
@@ -48,18 +48,48 @@ class AuthController extends GetxController {
   }
 
   // ── Restore session from storage ────────────
-  Future<void> _restoreSession() async {
-    final savedUser = box.read('current_user');
-    if (savedUser != null) {
-      currentUser.value = UserModel.fromJson(savedUser);
-      await _loadPermissionsAndSubscription();
-    }
+ Future<void> _restoreSession() async {
+  final savedUser = box.read('current_user');
+  if (savedUser != null) {
+    currentUser.value = UserModel.fromJson(savedUser);
+    await _loadPermissionsAndSubscription();
+    return;
   }
+
+  // ✅ ADD THIS — restore kiosk session on app restart
+  final kioskId = box.read('kiosk_company_id');
+  if (kioskId != null && kioskId.isNotEmpty) {
+    kioskCompId.value = kioskId;
+    await authRepo.signInKioskSession(); // re-establish session
+  }
+}
 
   // ── Login ────────────────────────────────────
   Future<void> login(String emailOrUsername, String password) async {
     isLoading.value = true;
     try {
+      // ── Check kiosk login first (no '@' = could be kiosk username) ──
+      if (!emailOrUsername.contains('@')) {
+        final kioskCompanyId = await authRepo.checkKioskLogin(
+          emailOrUsername.trim(),
+          password.trim(),
+        );
+        if (kioskCompanyId != null && kioskCompanyId.isNotEmpty) {
+          kioskCompId.value = kioskCompanyId;
+          // Persist kiosk session so splash can restore it on refresh
+          box.write('kiosk_company_id', kioskCompanyId);
+          box.remove('current_user'); // ensure normal session is cleared
+
+           await authRepo.signInKioskSession();
+          isLoading.value = false;
+          Get.offAllNamed(
+            AppRoutes.routeKioskAttendance,
+            arguments: {'company_id': kioskCompanyId},
+          );
+          return;
+        }
+      }
+
       final userRow = await authRepo.login(emailOrUsername, password);
       final user = UserModel.fromJson(userRow);
       currentUser.value = user;
@@ -188,6 +218,7 @@ class AuthController extends GetxController {
     permissions.clear();
     subscription.value = null;
     box.remove('current_user');
+    box.remove('kiosk_company_id');
     Get.offAllNamed(AppRoutes.routeLogin);
   }
 
@@ -206,16 +237,35 @@ class AuthController extends GetxController {
       };
     } else if (user.roleId == null) {
       for (final module in AppConstants.modules) {
-        permissions[module] = RolePermissionModel(
-          id: '',
-          companyId: user.companyId,
-          roleId: '',
-          module: module,
-          canView: true,
-          canAdd: true,
-          canEdit: true,
-          canDelete: true,
-        );
+        switch (module) {
+          case "dashboard":
+          case "holiday":
+          case "attendance_report":
+            permissions[module] = RolePermissionModel(
+              id: '',
+              companyId: user.companyId,
+              roleId: '',
+              module: module,
+              canView: true,
+              canAdd: false,
+              canEdit: false,
+              canDelete: false,
+            );
+          case "company":
+          case "employee":
+          case "employee_status":
+          case "subscription":
+            permissions[module] = RolePermissionModel(
+              id: '',
+              companyId: user.companyId,
+              roleId: '',
+              module: module,
+              canView: false,
+              canAdd: false,
+              canEdit: false,
+              canDelete: false,
+            );
+        }
       }
     } else if (user.isAdmin) {
       // Admin with NO role assigned gets full access to everything

@@ -600,6 +600,7 @@ class SignupController extends GetxController {
             ),
           ),
           const SizedBox(width: 12),
+          if(!otpVerified.value)
           ElevatedButton(
             onPressed: sendingOtp.value ? null : sendOtp,
             style: ElevatedButton.styleFrom(

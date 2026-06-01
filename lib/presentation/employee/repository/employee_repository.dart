@@ -20,6 +20,15 @@ class EmployeeRepository {
     return rows.map<EmployeeModel>((r) => EmployeeModel.fromJson(r)).toList();
   }
 
+  Future<List<EmployeeModel>> getAllEmployees(String companyId) async {
+    final res = await SupabaseService.client
+        .from('employees')
+        .select()
+        .eq('company_id', companyId)
+        .eq('is_active', true);
+    return (res as List).map((e) => EmployeeModel.fromJson(e)).toList();
+  }
+
   Future<EmployeeModel?> getEmployee(String id) async {
     final row = await SupabaseService.client
         .from('employees')

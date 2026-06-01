@@ -44,21 +44,32 @@ class SubscriptionController extends GetxController {
     isLoading.value = true;
     try {
       final now = NetworkTime.now();
-      final days = duration == 'yearly' ? 365 : 30;
-      final expiry = now.add(Duration(days: days));
+    final days = duration == 'yearly' ? 365 : 30;
+    final expiry = now.add(Duration(days: days));
 
-      final sub = await repo.createSubscription({
-        'company_id': auth.companyId,
-        'plan': planName,
-        'status': 'active',
-        'user_limit': userLimit,
-        'start_date': now.toIso8601String().substring(0, 10),
-        'expiry_date': expiry.toIso8601String().substring(0, 10),
-        'payment_id': paymentId,
-        'payment_status': 'paid',
-        'amount': amount,
-        'duration': duration,
-      });
+    // Check if a subscription already exists for this company
+    final existing = await repo.getActiveSubscription(auth.companyId);
+
+    final subData = {
+      'company_id': auth.companyId,
+      'plan': planName,
+      'status': 'active',
+      'user_limit': userLimit,
+      'start_date': now.toIso8601String().substring(0, 10),
+      'expiry_date': expiry.toIso8601String().substring(0, 10),
+      'payment_id': paymentId,
+      'payment_status': 'paid',
+      'amount': amount,
+      'duration': duration,
+    };
+
+    SubscriptionModel sub;
+    if (existing != null) {
+      // UPDATE the existing row instead of inserting a new one
+      sub = await repo.updateSubscription(existing.id, subData);
+    } else {
+      sub = await repo.createSubscription(subData);
+    }
 
       await repo.recordPayment({
         'company_id': auth.companyId,

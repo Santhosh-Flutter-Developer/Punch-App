@@ -24,6 +24,7 @@ class AttendanceController extends GetxController {
   // Filters
   final fromDate = Rxn<DateTime>();
   final toDate = Rxn<DateTime>();
+  final RxBool showErr = true.obs;
   final filterEmployeeId = RxnString();
   final filterDepartmentId = RxnString();
 
@@ -159,9 +160,15 @@ class AttendanceController extends GetxController {
     bool isManual = true,
   }) async {
     try {
-      data['company_id'] = auth.companyId;
-      data['adjusted_by'] = auth.userId;
-
+      if (auth.companyId.isNotEmpty) {
+        data['company_id'] = auth.companyId;
+      }
+      if (auth.userId.isNotEmpty) {
+        data['adjusted_by'] = auth.userId;
+      } else {
+        data.remove('adjusted_by');
+      }
+      final companyId = data['company_id'] as String;
       final empId = data['employee_id'] as String;
       final dateStr = data['date'] as String;
       final punchType = data['punch_type'] as String;
@@ -171,7 +178,7 @@ class AttendanceController extends GetxController {
       final leaveCheck = await SupabaseService.client
           .from('leave_requests')
           .select('id, from_date, to_date')
-          .eq('company_id', auth.companyId)
+          .eq('company_id', companyId)
           .eq('employee_id', empId)
           .eq('status', 'approved')
           .lte('from_date', dateStr)
@@ -182,12 +189,19 @@ class AttendanceController extends GetxController {
         showError(
           'Cannot add punch on $dateStr — employee has an approved leave on this date',
         );
+        showErr.value = false;
         return;
       }
 
+      final freshLogs = await repo.getAttendanceLogs(
+      companyId,
+      date: newPunchTime,
+      employeeId: empId,
+    );
+
       // ... rest of existing validation (sequence check, time check) ...
       final sameDayLogs =
-          logs
+          freshLogs
               .where(
                 (l) =>
                     l.employeeId == empId &&
@@ -203,13 +217,24 @@ class AttendanceController extends GetxController {
           .where((l) => l.punchType == PunchType.out)
           .toList();
 
-      if (punchType == 'out' && inLogs.length <= outLogs.length) {
-        showError('Please add Punch IN before Punch OUT');
-        return;
+      // ✅ Check actual last punch type, not counts
+      final lastLog = sameDayLogs.isNotEmpty ? sameDayLogs.last : null;
+      if (punchType == 'out') {
+        // Can only punch out if last punch was "in"
+        if (lastLog == null || lastLog.punchType != PunchType.in_) {
+          showError('Please add Punch IN before Punch OUT');
+          showErr.value = false;
+          return;
+        }
       }
-      if (punchType == 'in' && inLogs.length > outLogs.length) {
-        showError('Please add Punch OUT before adding another Punch IN');
-        return;
+
+      if (punchType == 'in') {
+        // Can only punch in if no punch yet, or last punch was "out"
+        if (lastLog != null && lastLog.punchType == PunchType.in_) {
+          showError('Please add Punch OUT before adding another Punch IN');
+          showErr.value = false;
+          return;
+        }
       }
 
       if (sameDayLogs.isNotEmpty) {
@@ -220,10 +245,11 @@ class AttendanceController extends GetxController {
           showError(
             'Time must be after ${AttendanceController.fmtTime(lastPunchTime)}',
           );
+          showErr.value = false;
           return;
         }
       }
-
+      showErr.value = true;
       final log = await repo.adjustPunch(data, isManual: isManual);
       logs.add(log);
       if (showToast == true) showSuccess('Punch adjusted successfully');
@@ -238,7 +264,7 @@ class AttendanceController extends GetxController {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Holiday'),
+        title: const Text('Delete Report'),
         content: const Text('Are you sure you want to delete this record?'),
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
@@ -279,19 +305,19 @@ class AttendanceController extends GetxController {
       );
       return;
     }
- 
+
     final format = await showDialog<ExportFormat>(
       context: context,
       barrierDismissible: true,
       builder: (_) => const ExportFormatDialog(),
     );
- 
+
     if (format == null || !context.mounted) return;
- 
+
     final companyName = 'Attendance Report';
     final from = fromDate.value ?? DateTime.now();
     final to = toDate.value ?? DateTime.now();
- 
+
     try {
       if (format == ExportFormat.pdf) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -299,9 +325,11 @@ class AttendanceController extends GetxController {
             content: Row(
               children: [
                 SizedBox(
-                  width: 18, height: 18,
+                  width: 18,
+                  height: 18,
                   child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white,
+                    strokeWidth: 2,
+                    color: Colors.white,
                   ),
                 ),
                 SizedBox(width: 12),
@@ -326,9 +354,11 @@ class AttendanceController extends GetxController {
             content: Row(
               children: [
                 SizedBox(
-                  width: 18, height: 18,
+                  width: 18,
+                  height: 18,
                   child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white,
+                    strokeWidth: 2,
+                    color: Colors.white,
                   ),
                 ),
                 SizedBox(width: 12),
@@ -421,7 +451,7 @@ class AttendanceController extends GetxController {
         '"$code","$name","$dateStr","$inStr","$outStr","$hrs","$isManual"',
       );
     }
- 
+
     // Download/show CSV
     if (kIsWeb) {
       // Web: trigger download via anchor

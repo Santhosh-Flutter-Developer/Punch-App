@@ -7,12 +7,14 @@ class AppShell extends StatelessWidget {
   final String currentModule;
   final String title;
   final List<Widget>? actions;
+  final bool enableSideBar;
   final Widget? floatingActionButton;
   const AppShell({
     super.key,
     required this.child,
     required this.currentModule,
     required this.title,
+    this.enableSideBar = true,
     this.actions,
     this.floatingActionButton,
   });
@@ -32,6 +34,7 @@ class AppShell extends StatelessWidget {
             currentModule: currentModule,
             title: title,
             actions: actions,
+            enableSideBar: enableSideBar,
             fab: floatingActionButton,
             child: child,
           );

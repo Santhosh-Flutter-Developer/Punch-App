@@ -6,6 +6,7 @@ class NarrowLayout extends StatelessWidget {
   final Widget child;
   final String currentModule;
   final String title;
+  final bool enableSideBar;
   final List<Widget>? actions;
   final Widget? fab;
   const NarrowLayout({
@@ -13,6 +14,7 @@ class NarrowLayout extends StatelessWidget {
     required this.child,
     required this.currentModule,
     required this.title,
+    this.enableSideBar = true,
     this.actions,
     this.fab,
   });
@@ -21,11 +23,13 @@ class NarrowLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bg,
-      drawer: Drawer(
-        backgroundColor: AppColors.sidebarBg,
-        width: 280,
-        child: SidebarWidget(currentModule: currentModule),
-      ),
+      drawer: enableSideBar
+          ? Drawer(
+              backgroundColor: AppColors.sidebarBg,
+              width: 280,
+              child: SidebarWidget(currentModule: currentModule),
+            )
+          : null,
       appBar: AppBar(
         title: Text(title),
         centerTitle: true,

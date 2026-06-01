@@ -246,7 +246,7 @@ class CompanyController extends GetxController {
       activeCompany.value = updated;
       final idx = companies.indexWhere((c) => c.id == cid);
       if (idx != -1) companies[idx] = updated;
-      showSuccess('Company updated');
+     
     } catch (e) {
       showError('Failed to update: $e');
     } finally {
@@ -306,6 +306,78 @@ class CompanyController extends GetxController {
       showError("Failed to load employee: $e");
     }
     return null;
+  }
+
+  // ── Kiosk / Without-Login ────────────────────────────────
+
+  /// Save kiosk settings (without_login toggle, language, username + password).
+  /// If [withoutLogin] is false, clears kiosk credentials from DB via RPC.
+  /// If [withoutLogin] is true:
+  ///   - First time (no existing kiosk_username): calls set_kiosk_credentials
+  ///   - Updating (existing kiosk_username): calls update_kiosk_settings
+  ///     (password is optional — blank = keep existing)
+  Future<void> saveKioskSettings({
+    required String companyId,
+    required bool withoutLogin,
+    required String language,
+    String? kioskUsername,
+    String? kioskPassword,
+    bool isFirstTime = true, // true = set_kiosk_credentials, false = update_kiosk_settings
+  }) async {
+    isLoading.value = true;
+    try {
+      if (!withoutLogin) {
+        // Disable: clear credentials via RPC
+        await client.rpc('disable_kiosk', params: {
+          'p_company_id': companyId,
+          'p_language': language,
+        });
+      } else if (isFirstTime) {
+        // First-time enable: password is required
+        await client.rpc('set_kiosk_credentials', params: {
+          'p_company_id': companyId,
+          'p_username': kioskUsername,
+          'p_password': kioskPassword,
+          'p_language': language,
+        });
+      } else {
+        // Update existing kiosk: password optional
+        await client.rpc('update_kiosk_settings', params: {
+          'p_company_id': companyId,
+          'p_username': kioskUsername,
+          'p_language': language,
+          'p_password': kioskPassword, // null = keep existing
+        });
+      }
+      await loadAllCompanies();
+       showSuccess('Company updated Successfully');
+    } catch (e) {
+      // Show meaningful error from RPC (e.g. username already taken)
+      final msg = e.toString().replaceAll('Exception: ', '');
+      showError(msg);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Returns true if username is free globally
+  /// (not in users.username AND not in another company's kiosk_username).
+  Future<bool> isKioskUsernameAvailable(
+    String username,
+    String currentCompanyId,
+  ) async {
+    try {
+      final result = await client.rpc(
+        'check_kiosk_username_available',
+        params: {
+          'p_username': username,
+          'p_company_id': currentCompanyId,
+        },
+      );
+      return result == true;
+    } catch (e) {
+      return false;
+    }
   }
 
   void confirmSwitch(

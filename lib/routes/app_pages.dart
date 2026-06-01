@@ -20,11 +20,13 @@ import 'package:punch_app/presentation/employee/ui/employee.dart';
 import 'package:punch_app/presentation/employee_status/binding/employee_status_binding.dart';
 import 'package:punch_app/presentation/employee_status/ui/employee_status.dart';
 import 'package:punch_app/presentation/face_capture/face_capture.dart';
+import 'package:punch_app/presentation/face_capture/face_detection.dart';
 import 'package:punch_app/presentation/face_capture/face_recognition.dart';
 import 'package:punch_app/presentation/holiday/binding/holiday_binding.dart';
 import 'package:punch_app/presentation/holiday/ui/holiday.dart';
 import 'package:punch_app/presentation/leave/binding/leave_binding.dart';
 import 'package:punch_app/presentation/leave/ui/leave.dart';
+import 'package:punch_app/presentation/mark_attendance/mark_attendance.dart';
 import 'package:punch_app/presentation/permission_request/binding/permission_binding.dart';
 import 'package:punch_app/presentation/permission_request/ui/permission_request.dart';
 import 'package:punch_app/presentation/salary_type/binding/salary_type_binding.dart';
@@ -126,7 +128,17 @@ class AppPages {
     GetPage(name: AppRoutes.routeFaceCapture, page: () => FaceCaptureView()),
     GetPage(
       name: AppRoutes.routeFaceRecognition,
-      page: () => FaceRecognitionView(),
+      page: () => FaceRecognitionView(
+      ),
+    ),
+    GetPage(
+      name: AppRoutes.routeKioskAttendance,
+      page: () => const MarkAttendance(),
+    ),
+    GetPage(
+      name: AppRoutes.routeFaceDetection,
+      page: () => FaceDetection(
+      ),
     ),
   ];
 }

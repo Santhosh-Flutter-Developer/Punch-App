@@ -17,4 +17,6 @@ class AppRoutes {
   static const String routeSubscription = '/subscription';
   static const String routeFaceCapture = '/face-capture';
   static const String routeFaceRecognition = '/face-recognition';
+  static const String routeKioskAttendance = '/kiosk-attendance';
+  static const String routeFaceDetection = '/face-detection';
 }

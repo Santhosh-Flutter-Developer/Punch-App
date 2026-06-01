@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -45,10 +46,37 @@ class _CompanyDetailState extends State<CompanyDetail> {
   Uint8List? logoBytes;
   String? logoPath;
 
+  // ── Kiosk / Without-Login settings ──────────────────────
+  late bool kioskEnabled; // Without Login: true/false
+  late String notifLang; // 'en' or 'ta'
+  final kioskUsernameCtrl = TextEditingController();
+  final kioskPasswordCtrl = TextEditingController();
+  bool kioskPasswordVisible = false;
+
+  // Live username uniqueness check
+  Timer? _usernameDebounce;
+  bool isCheckingUsername = false;
+  String? usernameError;
+
+  // Live password validation
+  String? passwordError;
+
   @override
   void initState() {
     super.initState();
     init(widget.company);
+    kioskEnabled = widget.company.withoutLoginEnabled;
+    notifLang = widget.company.notificationLanguage;
+    // Preserve exact case as stored
+    kioskUsernameCtrl.text = widget.company.kioskUsername ?? '';
+  }
+
+  @override
+  void dispose() {
+    _usernameDebounce?.cancel();
+    kioskUsernameCtrl.dispose();
+    kioskPasswordCtrl.dispose();
+    super.dispose();
   }
 
   void init(CompanyModel c) {
@@ -65,6 +93,67 @@ class _CompanyDetailState extends State<CompanyDetail> {
     lat = TextEditingController(text: '${c.latitude ?? ''}');
     lon = TextEditingController(text: '${c.longitude ?? ''}');
     radius = TextEditingController(text: '${c.radius}');
+  }
+
+  // ── Live username check (debounced 600ms) ────────────────
+  void onUsernameChanged(String value) {
+    _usernameDebounce?.cancel();
+
+    if (value.isEmpty) {
+      setState(() {
+        usernameError = null;
+        isCheckingUsername = false;
+      });
+      return;
+    }
+
+    // Immediate format validation
+    if (value.contains(' ')) {
+      setState(() => usernameError = 'Username cannot contain spaces');
+      return;
+    }
+
+    // Skip API check if unchanged from saved value
+    if (value == widget.company.kioskUsername) {
+      setState(() {
+        usernameError = null;
+        isCheckingUsername = false;
+      });
+      return;
+    }
+
+    setState(() {
+      isCheckingUsername = true;
+      usernameError = null;
+    });
+
+    _usernameDebounce = Timer(const Duration(milliseconds: 600), () async {
+      final available = await widget.controller.isKioskUsernameAvailable(
+        value,
+        widget.company.id,
+      );
+      if (mounted) {
+        setState(() {
+          isCheckingUsername = false;
+          usernameError = available ? null : 'This username is already taken';
+        });
+      }
+    });
+  }
+
+  // ── Live password validation ──────────────────────────────
+  void onPasswordChanged(String value) {
+    final hasExisting = widget.company.kioskUsername != null;
+    setState(() {
+      if (value.isEmpty && hasExisting) {
+        // Blank = keep existing password → valid
+        passwordError = null;
+      } else if (value.isNotEmpty && value.length < 6) {
+        passwordError = 'Password must be at least 6 characters';
+      } else {
+        passwordError = null;
+      }
+    });
   }
 
   @override
@@ -86,11 +175,11 @@ class _CompanyDetailState extends State<CompanyDetail> {
                     widget.controller.enable.refresh();
                   },
                   child: const Icon(Icons.arrow_back_ios_rounded),
-                  // padding: EdgeInsets.zero,
                 ),
               const SizedBox(height: 20.0),
               headerCard(),
               const SizedBox(height: 20.0),
+              // ── Basic Information ────────────────────────
               SriDetailCard(
                 title: 'Basic Information',
                 icon: Icons.info_outline_rounded,
@@ -382,6 +471,9 @@ class _CompanyDetailState extends State<CompanyDetail> {
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
+              // ── Configure Attendance Access Without Login ─
+              _attendanceAccessCard(isWide),
               // ── Save / Cancel ────────────────────────────
               if (editing) ...[
                 const SizedBox(height: 20),
@@ -391,7 +483,15 @@ class _CompanyDetailState extends State<CompanyDetail> {
                       child: SriButton(
                         onPressed: () => setState(() {
                           editing = false;
-                          init(widget.company); // reset
+                          init(widget.company);
+                          // Reset kiosk fields to saved values
+                          kioskEnabled = widget.company.withoutLoginEnabled;
+                          notifLang = widget.company.notificationLanguage;
+                          kioskUsernameCtrl.text =
+                              widget.company.kioskUsername ?? '';
+                          kioskPasswordCtrl.clear();
+                          usernameError = null;
+                          passwordError = null;
                         }),
                         isOutlined: true,
                         label: 'Cancel',
@@ -420,8 +520,62 @@ class _CompanyDetailState extends State<CompanyDetail> {
     );
   }
 
+  // ── Main save (company + kiosk together) ─────────────────
   void save() {
     if (!formKey.currentState!.validate()) return;
+
+    // Block if username has error
+    if (kioskEnabled && usernameError != null) {
+      Get.snackbar(
+        'Validation Error',
+        'Fix the kiosk username error before saving.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // Block if password has error
+    if (kioskEnabled && passwordError != null) {
+      Get.snackbar(
+        'Validation Error',
+        passwordError!,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // Kiosk username required when enabling for first time
+    final username = kioskUsernameCtrl.text.trim();
+    final password = kioskPasswordCtrl.text.trim();
+    final hasExisting = widget.company.kioskUsername != null;
+
+    if (kioskEnabled && username.isEmpty) {
+      Get.snackbar(
+        'Validation Error',
+        'Kiosk username is required.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (kioskEnabled && !hasExisting && password.isEmpty) {
+      Get.snackbar(
+        'Validation Error',
+        'Kiosk password is required.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // 1. Save basic company fields
     widget.controller.updateCompany(
       {
         'name': name.text.trim(),
@@ -441,9 +595,345 @@ class _CompanyDetailState extends State<CompanyDetail> {
       logoBytes: logoBytes,
       logoPath: logoPath,
     );
+
+    // 2. Save kiosk settings
+    widget.controller.saveKioskSettings(
+      companyId: widget.company.id,
+      withoutLogin: kioskEnabled,
+      language: notifLang,
+      kioskUsername: kioskEnabled
+          ? kioskUsernameCtrl.text
+          : null, // preserve exact case
+      kioskPassword: kioskEnabled && password.isNotEmpty ? password : null,
+      isFirstTime: !hasExisting,
+    );
+
     setState(() => editing = false);
   }
 
+  // ── Attendance Access card ───────────────────────────────
+  Widget _attendanceAccessCard(bool isWide) {
+    return SriDetailCard(
+      title: 'Access Without Login',
+      icon: Icons.no_accounts_rounded,
+      children: [
+        const SizedBox(height: 4),
+
+        // ── Without Login radio buttons ──────────────────
+        _sectionLabel(
+          'Without Login',
+          'Allow attendance marking without Supabase login',
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            _radioOption(
+              label: 'Enable',
+              value: true,
+              groupValue: kioskEnabled,
+              onChanged: (v) {
+                if (editing) {
+                  setState(() {
+                    kioskEnabled = v!;
+                    if (!kioskEnabled) {
+                      kioskUsernameCtrl.clear();
+                      kioskPasswordCtrl.clear();
+                      usernameError = null;
+                      passwordError = null;
+                    }
+                  });
+                }
+              },
+            ),
+            const SizedBox(width: 24),
+            _radioOption(
+              label: 'Disable',
+              value: false,
+              groupValue: kioskEnabled,
+              onChanged: (v) {
+                if (editing) {
+                  setState(() {
+                    kioskEnabled = v!;
+                    kioskUsernameCtrl.clear();
+                    kioskPasswordCtrl.clear();
+                    usernameError = null;
+                    passwordError = null;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 20),
+        const Divider(height: 1, color: AppColors.border),
+        const SizedBox(height: 20),
+
+        // ── Notification Language radio buttons ──────────
+        _sectionLabel(
+          'Notification Language',
+          'Language used for attendance notifications',
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            _radioOption<String>(
+              label: 'English',
+              value: 'en',
+              groupValue: notifLang,
+              onChanged: (v) {
+                if (editing) {
+                  setState(() => notifLang = v!);
+                }
+              },
+            ),
+            const SizedBox(width: 24),
+            _radioOption<String>(
+              label: 'Tamil (தமிழ்)',
+              value: 'ta',
+              groupValue: notifLang,
+              onChanged: (v) {
+                if (editing) {
+                  setState(() => notifLang = v!);
+                }
+              },
+            ),
+          ],
+        ),
+
+        // ── Kiosk credentials (only when enabled) ────────
+        if (kioskEnabled) ...[
+          const SizedBox(height: 20),
+          const Divider(height: 1, color: AppColors.border),
+          const SizedBox(height: 16),
+          _sectionLabel(
+            'User Credentials',
+            'Users log in with these credentials to access the attendance kiosk.',
+          ),
+          const SizedBox(height: 14),
+          ResponsiveGridRow(
+            children: [
+              // Username field
+              ResponsiveGridCol(
+                xl: 6,
+                lg: 6,
+                md: 6,
+                xs: 12,
+                sm: 12,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 0, right: isWide ? 8.0 : 0.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SriTextField(
+                        controller: kioskUsernameCtrl,
+                        label: 'Username *',
+                        readOnly: !editing,
+                        prefixIcon: Icons.person_outline_rounded,
+                        onChanged: onUsernameChanged,
+                        // Preserve exact case — no transformation
+                        suffixIconWidget: isCheckingUsername
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: Padding(
+                                  padding: EdgeInsets.all(12.0),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              )
+                            : usernameError == null &&
+                                  kioskUsernameCtrl.text.isNotEmpty &&
+                                  editing
+                            ? const Icon(
+                                Icons.check_circle_rounded,
+                                color: AppColors.accentGreen,
+                                size: 18,
+                              )
+                            : null,
+                        validator: (v) {
+                          if (kioskEnabled && (v == null || v.trim().isEmpty)) {
+                            return 'Username is required';
+                          }
+                          if (v != null && v.contains(' ')) {
+                            return 'Username cannot contain spaces';
+                          }
+                          if (usernameError != null) return usernameError;
+                          return null;
+                        },
+                      ),
+                      if (usernameError != null && editing) ...[
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Text(
+                            usernameError!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (usernameError == null &&
+                          !isCheckingUsername &&
+                          kioskUsernameCtrl.text.isNotEmpty &&
+                          editing) ...[
+                        const SizedBox(height: 4),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 12),
+                          child: Text(
+                            'Username is available ✓',
+                            style: TextStyle(
+                              color: AppColors.accentGreen,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              // Password field
+              ResponsiveGridCol(
+                xl: 6,
+                lg: 6,
+                md: 6,
+                xs: 12,
+                sm: 12,
+                child: Padding(
+                  padding: EdgeInsets.only(top:isWide?0.0: 12, left: isWide ? 8.0 : 0.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SriTextField(
+                        controller: kioskPasswordCtrl,
+                        label: widget.company.kioskUsername != null
+                            ? 'New Password (leave blank to keep)'
+                            : 'Password *',
+                        readOnly: !editing,
+                        obscureText: !kioskPasswordVisible,
+                        prefixIcon: Icons.lock_outline_rounded,
+                        onChanged: onPasswordChanged,
+                        suffixIcon: kioskPasswordVisible
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        onSuffixTap: () => setState(
+                          () => kioskPasswordVisible = !kioskPasswordVisible,
+                        ),
+                        validator: (v) {
+                          final hasExisting =
+                              widget.company.kioskUsername != null;
+                          if (kioskEnabled &&
+                              !hasExisting &&
+                              (v == null || v.isEmpty)) {
+                            return 'Password is required';
+                          }
+                          if (v != null && v.isNotEmpty && v.length < 6) {
+                            return 'Minimum 6 characters';
+                          }
+                          if (passwordError != null) return passwordError;
+                          return null;
+                        },
+                      ),
+                      if (passwordError != null) ...[
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Text(
+                            passwordError!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ),
+                      ] else if (kioskPasswordCtrl.text.isNotEmpty &&
+                          kioskPasswordCtrl.text.length >= 6) ...[
+                        const SizedBox(height: 4),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 12),
+                          child: Text(
+                            'Password looks good ✓',
+                            style: TextStyle(
+                              color: AppColors.accentGreen,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  // ── Helper: section label + subtitle ────────────────────
+  Widget _sectionLabel(String title, String subtitle) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          subtitle,
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+        ),
+      ],
+    );
+  }
+
+  // ── Helper: styled radio option ──────────────────────────
+  Widget _radioOption<T>({
+    required String label,
+    required T value,
+    required T groupValue,
+    required ValueChanged<T?> onChanged,
+  }) {
+    final selected = value == groupValue;
+    return GestureDetector(
+      onTap: () => onChanged(value),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Radio<T>(
+            value: value,
+            groupValue: groupValue,
+            onChanged: onChanged,
+            activeColor: AppColors.primary,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+              color: selected ? AppColors.primary : AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Header card ─────────────────────────────────────────
   Widget headerCard() {
     final c = widget.company;
     return Container(
@@ -562,10 +1052,8 @@ class _CompanyDetailState extends State<CompanyDetail> {
       source: ImageSource.gallery,
       maxWidth: 400,
     );
-
     if (img != null) {
       final bytes = await img.readAsBytes();
-
       setState(() {
         logoBytes = bytes;
         logoPath = img.path;
