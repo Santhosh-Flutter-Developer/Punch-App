@@ -41,6 +41,8 @@ class _EmployeeFormPageState extends State<EmployeeFormPage> {
   // Stepper
   int currentStep = 0;
   bool emailChanged = false;
+  bool emailCheck = false;
+  bool mobileCheck = false;
   final stepKeys = List.generate(4, (_) => GlobalKey<FormState>());
   bool isLoading = false;
   bool get isEdit => widget.employee != null;
@@ -752,6 +754,7 @@ class _StepBasicState extends State<_StepBasic> {
   Timer? mobileDebounce;
 
   void onMobileChanged(String value) {
+    setState(() => widget.state.mobileCheck = true);
     mobileDebounce?.cancel();
 
     if (value.isEmpty) {
@@ -780,8 +783,12 @@ class _StepBasicState extends State<_StepBasic> {
           isCheckingMobile = false;
           mobileError = exists ? 'This mobile is already registered' : null;
         });
+        Future.delayed(const Duration(seconds: 2), () {
+      setState(() => widget.state.mobileCheck = false);
+    });
       }
     });
+    
   }
 
   bool isValidEmail(String email) {
@@ -790,6 +797,7 @@ class _StepBasicState extends State<_StepBasic> {
   }
 
   void onEmailChanged(String value) {
+    setState(() => widget.state.emailCheck = true);
     // Cancel previous debounce
     emailDebounce?.cancel();
 
@@ -824,9 +832,13 @@ class _StepBasicState extends State<_StepBasic> {
             widget.state.emailChanged = false;
           }
           emailError = exists ? 'This email is already registered' : null;
+          Future.delayed(Duration(seconds: 2), () {
+      setState(() => widget.state.emailCheck = false);
+    });
         });
       }
     });
+    
   }
 
   @override
@@ -1021,6 +1033,9 @@ class _StepBasicState extends State<_StepBasic> {
                               )
                             : null,
                         validator: (v) {
+                          if (widget.state.mobileCheck) {
+                            return 'Checking mobile...';
+                          }
                           if (v?.isEmpty == true) {
                             return 'Mobile Number is Required';
                           }
@@ -1069,6 +1084,9 @@ class _StepBasicState extends State<_StepBasic> {
                               )
                             : null,
                         validator: (v) {
+                          if (widget.state.emailCheck) {
+                            return 'Checking email...';
+                          }
                           if (v == null || v.isEmpty) {
                             return 'Email is required';
                           } else if (!isValidEmail(v)) {
@@ -1711,8 +1729,7 @@ class _StepLoginDocs extends StatelessWidget {
                     final i = entry.key;
                     final doc = entry.value;
                     final bool isSaved = doc.containsKey('url');
-                    final String docName =
-                        doc['name'] as String? ?? 'document';
+                    final String docName = doc['name'] as String? ?? 'document';
                     final String subLabel = isSaved
                         ? 'Already uploaded'
                         : state._formatBytes(
