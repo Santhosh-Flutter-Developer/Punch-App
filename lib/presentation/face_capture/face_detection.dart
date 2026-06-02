@@ -112,6 +112,7 @@ class FaceRecognitionViewState extends State<FaceDetection> {
   // ── Load ALL today's logs for this employee ──────────────
   Future<void> _loadTodayLogs() async {
     if (employee == null) return;
+    if (employee!.id.isEmpty) return;
     final today = NetworkTime.now().toIso8601String().substring(0, 10);
     try {
       final rows = await attendanceController.repo.getAttendanceLogs(
@@ -206,13 +207,11 @@ class FaceRecognitionViewState extends State<FaceDetection> {
     allEmployees.value = employees;
   }
 
-  Future<void> getEmployee() async {
-    employee = await employeeController.getEmployee(auth.userId);
-  }
+
 
   Future<bool> onFaceDetected(faces) async {
     if (_recognized == true) return false;
-    if (!mounted) return false;
+    if (!mounted) return false; 
 
     setState(() => _faces = faces);
 
@@ -404,7 +403,9 @@ class FaceRecognitionViewState extends State<FaceDetection> {
           await NetworkTime.syncTime();
           if (!mounted) return false;
           // ── Load today's punch history ────────────────────
-          await _loadTodayLogs();
+          if (employee != null && employee!.id.isNotEmpty) {
+            await _loadTodayLogs();
+          }
           if (!mounted) return false;
           // ── Show punch selector sheet ─────────────────────
 
