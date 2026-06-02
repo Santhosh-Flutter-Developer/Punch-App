@@ -784,11 +784,10 @@ class _StepBasicState extends State<_StepBasic> {
           mobileError = exists ? 'This mobile is already registered' : null;
         });
         Future.delayed(const Duration(seconds: 2), () {
-      setState(() => widget.state.mobileCheck = false);
-    });
+          setState(() => widget.state.mobileCheck = false);
+        });
       }
     });
-    
   }
 
   bool isValidEmail(String email) {
@@ -833,12 +832,11 @@ class _StepBasicState extends State<_StepBasic> {
           }
           emailError = exists ? 'This email is already registered' : null;
           Future.delayed(Duration(seconds: 2), () {
-      setState(() => widget.state.emailCheck = false);
-    });
+            setState(() => widget.state.emailCheck = false);
+          });
         });
       }
     });
-    
   }
 
   @override
