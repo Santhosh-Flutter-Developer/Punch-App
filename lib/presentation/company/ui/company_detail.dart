@@ -56,6 +56,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
   // Live username uniqueness check
   Timer? _usernameDebounce;
   bool isCheckingUsername = false;
+  bool usernameVerified = false;
   String? usernameError;
 
   // Live password validation
@@ -69,6 +70,8 @@ class _CompanyDetailState extends State<CompanyDetail> {
     notifLang = widget.company.notificationLanguage;
     // Preserve exact case as stored
     kioskUsernameCtrl.text = widget.company.kioskUsername ?? '';
+    // Existing saved username is already valid
+    usernameVerified = widget.company.kioskUsername != null;
   }
 
   @override
@@ -95,9 +98,21 @@ class _CompanyDetailState extends State<CompanyDetail> {
     radius = TextEditingController(text: '${c.radius}');
   }
 
+  bool get isUsernameChanged {
+    final originalUsername = widget.company.kioskUsername ?? '';
+    final currentUsername = kioskUsernameCtrl.text.trim();
+
+    return widget.company.kioskUsername != null &&
+        currentUsername != originalUsername;
+  }
+
   // ── Live username check (debounced 600ms) ────────────────
   void onUsernameChanged(String value) {
     _usernameDebounce?.cancel();
+
+    setState(() {
+      usernameVerified = false;
+    });
 
     if (value.isEmpty) {
       setState(() {
@@ -107,17 +122,20 @@ class _CompanyDetailState extends State<CompanyDetail> {
       return;
     }
 
-    // Immediate format validation
     if (value.contains(' ')) {
-      setState(() => usernameError = 'Username cannot contain spaces');
+      setState(() {
+        usernameError = 'Username cannot contain spaces';
+        isCheckingUsername = false;
+      });
       return;
     }
 
-    // Skip API check if unchanged from saved value
-    if (value == widget.company.kioskUsername) {
+    // Username unchanged
+    if (value.trim() == (widget.company.kioskUsername ?? '')) {
       setState(() {
         usernameError = null;
         isCheckingUsername = false;
+        usernameVerified = true;
       });
       return;
     }
@@ -129,15 +147,23 @@ class _CompanyDetailState extends State<CompanyDetail> {
 
     _usernameDebounce = Timer(const Duration(milliseconds: 600), () async {
       final available = await widget.controller.isKioskUsernameAvailable(
-        value,
+        value.trim(),
         widget.company.id,
       );
-      if (mounted) {
-        setState(() {
-          isCheckingUsername = false;
-          usernameError = available ? null : 'This username is already taken';
-        });
-      }
+
+      if (!mounted) return;
+
+      setState(() {
+        isCheckingUsername = false;
+
+        if (available) {
+          usernameError = null;
+          usernameVerified = true;
+        } else {
+          usernameError = 'This username is already taken';
+          usernameVerified = false;
+        }
+      });
     });
   }
 
@@ -492,6 +518,8 @@ class _CompanyDetailState extends State<CompanyDetail> {
                           kioskPasswordCtrl.clear();
                           usernameError = null;
                           passwordError = null;
+                          usernameVerified =
+                              widget.company.kioskUsername != null;
                         }),
                         isOutlined: true,
                         label: 'Cancel',
@@ -501,7 +529,9 @@ class _CompanyDetailState extends State<CompanyDetail> {
                     Expanded(
                       child: Obx(
                         () => SriButton(
-                          onPressed: widget.controller.isLoading.value
+                          onPressed:
+                              widget.controller.isLoading.value ||
+                                  isCheckingUsername
                               ? null
                               : save,
                           isLoading: widget.controller.isLoading.value,
@@ -523,6 +553,30 @@ class _CompanyDetailState extends State<CompanyDetail> {
   // ── Main save (company + kiosk together) ─────────────────
   void save() {
     if (!formKey.currentState!.validate()) return;
+
+    if (kioskEnabled && isCheckingUsername) {
+      Get.snackbar(
+        'Please Wait',
+        'Checking username availability...',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (kioskEnabled &&
+        kioskUsernameCtrl.text.trim().isNotEmpty &&
+        !usernameVerified) {
+      Get.snackbar(
+        'Validation Error',
+        'Please verify the username before saving.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
 
     // Block if username has error
     if (kioskEnabled && usernameError != null) {
@@ -564,10 +618,14 @@ class _CompanyDetailState extends State<CompanyDetail> {
       return;
     }
 
-    if (kioskEnabled && !hasExisting && password.isEmpty) {
+    if (kioskEnabled &&
+        ((!hasExisting) || isUsernameChanged) &&
+        password.isEmpty) {
       Get.snackbar(
         'Validation Error',
-        'Kiosk password is required.',
+        isUsernameChanged
+            ? 'Password is required when changing the username.'
+            : 'Kiosk password is required.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
@@ -743,7 +801,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
                                   ),
                                 ),
                               )
-                            : usernameError == null &&
+                            : usernameVerified &&
                                   kioskUsernameCtrl.text.isNotEmpty &&
                                   editing
                             ? const Icon(
@@ -776,7 +834,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
                           ),
                         ),
                       ],
-                      if (usernameError == null &&
+                      if (usernameVerified &&
                           !isCheckingUsername &&
                           kioskUsernameCtrl.text.isNotEmpty &&
                           editing) ...[
@@ -805,13 +863,18 @@ class _CompanyDetailState extends State<CompanyDetail> {
                 xs: 12,
                 sm: 12,
                 child: Padding(
-                  padding: EdgeInsets.only(top:isWide?0.0: 12, left: isWide ? 8.0 : 0.0),
+                  padding: EdgeInsets.only(
+                    top: isWide ? 0.0 : 12,
+                    left: isWide ? 8.0 : 0.0,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SriTextField(
                         controller: kioskPasswordCtrl,
-                        label: widget.company.kioskUsername != null
+                        label:
+                            (widget.company.kioskUsername != null &&
+                                !isUsernameChanged)
                             ? 'New Password (leave blank to keep)'
                             : 'Password *',
                         readOnly: !editing,
@@ -827,15 +890,23 @@ class _CompanyDetailState extends State<CompanyDetail> {
                         validator: (v) {
                           final hasExisting =
                               widget.company.kioskUsername != null;
+
                           if (kioskEnabled &&
-                              !hasExisting &&
+                              ((!hasExisting) || isUsernameChanged) &&
                               (v == null || v.isEmpty)) {
-                            return 'Password is required';
+                            return isUsernameChanged
+                                ? 'Password is required when changing username'
+                                : 'Password is required';
                           }
+
                           if (v != null && v.isNotEmpty && v.length < 6) {
                             return 'Minimum 6 characters';
                           }
-                          if (passwordError != null) return passwordError;
+
+                          if (passwordError != null) {
+                            return passwordError;
+                          }
+
                           return null;
                         },
                       ),
