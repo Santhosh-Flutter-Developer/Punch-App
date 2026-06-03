@@ -636,19 +636,19 @@ class _CompanyDetailState extends State<CompanyDetail> {
     // 1. Save basic company fields
     widget.controller.updateCompany(
       {
-        'name': name.text.trim(),
-        'branch_code': branchCode.text.trim(),
-        'phone': phone.text.trim(),
-        'email': email.text.trim(),
-        'gstin': gstin.text.trim(),
-        'address': address.text.trim(),
-        'country': country.text.trim(),
-        'state': state.text.trim(),
-        'city': city.text.trim(),
-        'pincode': pincode.text.trim(),
-        'latitude': double.tryParse(lat.text),
-        'longitude': double.tryParse(lon.text),
-        'radius': int.tryParse(radius.text) ?? 100,
+        'name': name.text.trim().isEmpty? null: name.text.trim(),
+        'branch_code':branchCode.text.trim().isEmpty?null: branchCode.text.trim(),
+        'phone':phone.text.trim().isEmpty?null: phone.text.trim(),
+        'email':email.text.trim().isEmpty?null: email.text.trim(),
+        'gstin':  gstin.text.trim().isEmpty ? null : gstin.text.trim(),
+        'address': address.text.trim().isEmpty ? null : address.text.trim(),
+        'country': country.text.trim().isEmpty ? null : country.text.trim(),
+        'state': state.text.trim().isEmpty ? null : state.text.trim(),
+        'city': city.text.trim().isEmpty ? null : city.text.trim(),
+        'pincode': pincode.text.trim().isEmpty ? null : pincode.text.trim(),
+        'latitude': lat.text.trim().isEmpty ? null : double.tryParse(lat.text),
+        'longitude': lon.text.trim().isEmpty ? null : double.tryParse(lon.text),
+        'radius': radius.text.trim().isEmpty ? null : int.tryParse(radius.text) ?? 100,
       },
       logoBytes: logoBytes,
       logoPath: logoPath,
@@ -659,7 +659,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
       companyId: widget.company.id,
       withoutLogin: kioskEnabled,
       language: notifLang,
-      kioskUsername: kioskEnabled
+      kioskUsername: kioskEnabled && kioskUsernameCtrl.text.trim().isNotEmpty
           ? kioskUsernameCtrl.text
           : null, // preserve exact case
       kioskPassword: kioskEnabled && password.isNotEmpty ? password : null,
