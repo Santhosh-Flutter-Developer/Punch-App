@@ -207,11 +207,9 @@ class FaceRecognitionViewState extends State<FaceDetection> {
     allEmployees.value = employees;
   }
 
-
-
   Future<bool> onFaceDetected(faces) async {
     if (_recognized == true) return false;
-    if (!mounted) return false; 
+    if (!mounted) return false;
 
     setState(() => _faces = faces);
 
@@ -348,15 +346,25 @@ class FaceRecognitionViewState extends State<FaceDetection> {
             }
           }
         } else {
-          faceDetectionViewController?.stopCamera();
-          _audio.play(AttendanceAudioEvent.configureLocation, _notifLang); // 🔊
-          Get.back();
-          Get.snackbar(
-            'Warning',
-            'Please configure Company Latitude and Longitude. Contact Admin.',
-            backgroundColor: AppColors.warning,
-          );
-          return false;
+          if (locationCheck == false) {
+            if (!mounted) return false;
+            setState(() {
+              locationCheck = true;
+              faceRecognized = true;
+            });
+            faceDetectionViewController?.stopCamera();
+            _audio.play(
+              AttendanceAudioEvent.configureLocation,
+              _notifLang,
+            ); // 🔊
+            Get.back();
+            Get.snackbar(
+              'Warning',
+              'Please configure Company Latitude and Longitude. Contact Admin.',
+              backgroundColor: AppColors.warning,
+            );
+            return false;
+          }
         }
       }
       if (!mounted) return false;

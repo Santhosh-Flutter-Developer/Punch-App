@@ -337,15 +337,25 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
             }
           }
         } else {
-          faceDetectionViewController?.stopCamera();
-          _audio.play(AttendanceAudioEvent.configureLocation, _notifLang); // 🔊
-          Get.back();
-          Get.snackbar(
-            'Warning',
-            'Please configure Company Latitude and Longitude. Contact Admin.',
-            backgroundColor: AppColors.warning,
-          );
-          return false;
+          if (locationCheck == false) {
+            if (!mounted) return false;
+            setState(() {
+              locationCheck = true;
+              faceRecognized = true;
+            });
+            faceDetectionViewController?.stopCamera();
+            _audio.play(
+              AttendanceAudioEvent.configureLocation,
+              _notifLang,
+            ); // 🔊
+            Get.back();
+            Get.snackbar(
+              'Warning',
+              'Please configure Company Latitude and Longitude. Contact Admin.',
+              backgroundColor: AppColors.warning,
+            );
+            return false;
+          }
         }
       }
       if (!mounted) return false;
@@ -398,9 +408,8 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
           if (!mounted) return false;
 
           // ── Show punch selector sheet ─────────────────────
-          
-            await _showPunchSelectorSheet();
-          
+
+          await _showPunchSelectorSheet();
         }
       }
     });
