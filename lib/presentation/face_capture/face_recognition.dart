@@ -758,508 +758,510 @@ class _PunchSelectorSheetState extends State<_PunchSelectorSheet> {
     final nowStr =
         '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ── Handle bar ────────────────────────────────
-            const SizedBox(height: 10),
-            Container(
-              width: 44,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(2),
+    return SafeArea(
+      child: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // ── Handle bar ────────────────────────────────
+              const SizedBox(height: 10),
+              Container(
+                width: 44,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-
-            // ── Header ────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(14),
+              const SizedBox(height: 20),
+      
+              // ── Header ────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.fingerprint_rounded,
+                        color: AppColors.primary,
+                        size: 26,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.fingerprint_rounded,
-                      color: AppColors.primary,
-                      size: 26,
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Mark Attendance',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            widget.employeeName,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    // Current time chip
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.primary.withOpacity(0.2),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.access_time_rounded,
+                            size: 14,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            nowStr,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+      
+              const SizedBox(height: 20),
+              const Divider(height: 1, color: AppColors.border),
+              const SizedBox(height: 20),
+      
+              // ── Today's Punch History ─────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
+                        const Icon(
+                          Icons.history_rounded,
+                          size: 16,
+                          color: AppColors.textSecondary,
+                        ),
+                        const SizedBox(width: 6),
                         const Text(
-                          'Mark Attendance',
+                          "Today's Punch History",
                           style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.textPrimary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textSecondary,
                           ),
                         ),
+                        const Spacer(),
+                        if (widget.todayLogs.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.accentGreen.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'Total: ${_totalHours()}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.accentGreen,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    if (widget.todayLogs.isEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceVariant,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              size: 16,
+                              color: AppColors.textMuted,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'No punches recorded today',
+                              style: TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      // Timeline of today's punches
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceVariant,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: AppColors.border),
+                        ),
+                        child: Column(
+                          children: [
+                            ...widget.todayLogs.asMap().entries.map((entry) {
+                              final idx = entry.key;
+                              final log = entry.value;
+                              final isIn = log.punchType == PunchType.in_;
+                              final isLast = idx == widget.todayLogs.length - 1;
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 10,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        // Punch type badge
+                                        Container(
+                                          width: 34,
+                                          height: 34,
+                                          decoration: BoxDecoration(
+                                            color: isIn
+                                                ? AppColors.success.withOpacity(
+                                                    0.12,
+                                                  )
+                                                : AppColors.error.withOpacity(
+                                                    0.12,
+                                                  ),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            isIn
+                                                ? Icons.login_rounded
+                                                : Icons.logout_rounded,
+                                            size: 17,
+                                            color: isIn
+                                                ? AppColors.success
+                                                : AppColors.error,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                isIn ? 'Punch IN' : 'Punch OUT',
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: isIn
+                                                      ? AppColors.success
+                                                      : AppColors.error,
+                                                ),
+                                              ),
+                                              Text(
+                                                log.isManual
+                                                    ? 'Manual adjustment'
+                                                    : 'Face attendance',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: log.isManual
+                                                      ? AppColors.textMuted
+                                                      : AppColors.primary,
+                                                  fontWeight: log.isManual
+                                                      ? FontWeight.normal
+                                                      : FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Text(
+                                          _fmt(log.punchTime),
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w800,
+                                            color: AppColors.textPrimary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (!isLast)
+                                    const Divider(
+                                      height: 1,
+                                      color: AppColors.border,
+                                    ),
+                                ],
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+      
+              const SizedBox(height: 20),
+      
+              // ── Punch Type Selector ───────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(
+                          Icons.touch_app_rounded,
+                          size: 16,
+                          color: AppColors.textSecondary,
+                        ),
+                        SizedBox(width: 6),
                         Text(
-                          widget.employeeName,
-                          style: const TextStyle(
+                          'Select Punch Type',
+                          style: TextStyle(
                             fontSize: 13,
+                            fontWeight: FontWeight.w700,
                             color: AppColors.textSecondary,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  // Current time chip
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.primary.withOpacity(0.2),
-                      ),
-                    ),
-                    child: Row(
+                    const SizedBox(height: 12),
+                    Row(
                       children: [
-                        const Icon(
-                          Icons.access_time_rounded,
-                          size: 14,
-                          color: AppColors.primary,
+                        // IN button
+                        Expanded(
+                          child: _PunchOptionCard(
+                            label: 'Punch IN',
+                            icon: Icons.login_rounded,
+                            color: AppColors.success,
+                            selected: selectedType == 'in',
+                            disabled: widget.mustBeOut,
+                            onTap: widget.mustBeOut ? null : () => _select('in'),
+                          ),
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          nowStr,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primary,
+                        const SizedBox(width: 12),
+                        // OUT button
+                        Expanded(
+                          child: _PunchOptionCard(
+                            label: 'Punch OUT',
+                            icon: Icons.logout_rounded,
+                            color: AppColors.error,
+                            selected: selectedType == 'out',
+                            disabled: widget.mustBeIn,
+                            onTap: widget.mustBeIn ? null : () => _select('out'),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-            const Divider(height: 1, color: AppColors.border),
-            const SizedBox(height: 20),
-
-            // ── Today's Punch History ─────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.history_rounded,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(width: 6),
-                      const Text(
-                        "Today's Punch History",
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const Spacer(),
-                      if (widget.todayLogs.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.accentGreen.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            'Total: ${_totalHours()}',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.accentGreen,
-                            ),
+      
+                    // ── Validation error ────────────────────
+                    if (validationError != null) ...[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withOpacity(0.07),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: AppColors.error.withOpacity(0.2),
                           ),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  if (widget.todayLogs.isEmpty)
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceVariant,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline_rounded,
-                            size: 16,
-                            color: AppColors.textMuted,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'No punches recorded today',
-                            style: TextStyle(
-                              color: AppColors.textMuted,
-                              fontSize: 13,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.warning_amber_rounded,
+                              size: 16,
+                              color: AppColors.error,
                             ),
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    // Timeline of today's punches
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceVariant,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Column(
-                        children: [
-                          ...widget.todayLogs.asMap().entries.map((entry) {
-                            final idx = entry.key;
-                            final log = entry.value;
-                            final isIn = log.punchType == PunchType.in_;
-                            final isLast = idx == widget.todayLogs.length - 1;
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 10,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      // Punch type badge
-                                      Container(
-                                        width: 34,
-                                        height: 34,
-                                        decoration: BoxDecoration(
-                                          color: isIn
-                                              ? AppColors.success.withOpacity(
-                                                  0.12,
-                                                )
-                                              : AppColors.error.withOpacity(
-                                                  0.12,
-                                                ),
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          isIn
-                                              ? Icons.login_rounded
-                                              : Icons.logout_rounded,
-                                          size: 17,
-                                          color: isIn
-                                              ? AppColors.success
-                                              : AppColors.error,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              isIn ? 'Punch IN' : 'Punch OUT',
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w700,
-                                                color: isIn
-                                                    ? AppColors.success
-                                                    : AppColors.error,
-                                              ),
-                                            ),
-                                            Text(
-                                              log.isManual
-                                                  ? 'Manual adjustment'
-                                                  : 'Face attendance',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: log.isManual
-                                                    ? AppColors.textMuted
-                                                    : AppColors.primary,
-                                                fontWeight: log.isManual
-                                                    ? FontWeight.normal
-                                                    : FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Text(
-                                        _fmt(log.punchTime),
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800,
-                                          color: AppColors.textPrimary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                validationError!,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.error,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                if (!isLast)
-                                  const Divider(
-                                    height: 1,
-                                    color: AppColors.border,
-                                  ),
-                              ],
-                            );
-                          }),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ── Punch Type Selector ───────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Row(
-                    children: [
-                      Icon(
-                        Icons.touch_app_rounded,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        'Select Punch Type',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      // IN button
-                      Expanded(
-                        child: _PunchOptionCard(
-                          label: 'Punch IN',
-                          icon: Icons.login_rounded,
-                          color: AppColors.success,
-                          selected: selectedType == 'in',
-                          disabled: widget.mustBeOut,
-                          onTap: widget.mustBeOut ? null : () => _select('in'),
+      
+                    // ── Info hint ───────────────────────────
+                    if (validationError == null) ...[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.info.withOpacity(0.06),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: AppColors.info.withOpacity(0.15),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      // OUT button
-                      Expanded(
-                        child: _PunchOptionCard(
-                          label: 'Punch OUT',
-                          icon: Icons.logout_rounded,
-                          color: AppColors.error,
-                          selected: selectedType == 'out',
-                          disabled: widget.mustBeIn,
-                          onTap: widget.mustBeIn ? null : () => _select('out'),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.info_outline_rounded,
+                              size: 16,
+                              color: AppColors.info,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                selectedType == 'in'
+                                    ? 'This will record your entry time as $nowStr'
+                                    : 'This will record your exit time as $nowStr',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-
-                  // ── Validation error ────────────────────
-                  if (validationError != null) ...[
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.error.withOpacity(0.07),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: AppColors.error.withOpacity(0.2),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.warning_amber_rounded,
-                            size: 16,
-                            color: AppColors.error,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              validationError!,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.error,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
-
-                  // ── Info hint ───────────────────────────
-                  if (validationError == null) ...[
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.info.withOpacity(0.06),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: AppColors.info.withOpacity(0.15),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.info_outline_rounded,
-                            size: 16,
-                            color: AppColors.info,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              selectedType == 'in'
-                                  ? 'This will record your entry time as $nowStr'
-                                  : 'This will record your exit time as $nowStr',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ],
+                ),
               ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // ── Action Buttons ────────────────────────────
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  // Cancel
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: loading ? null : widget.onCancel,
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+      
+              const SizedBox(height: 20),
+      
+              // ── Action Buttons ────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    // Cancel
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: loading ? null : widget.onCancel,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          side: const BorderSide(color: AppColors.border),
                         ),
-                        side: const BorderSide(color: AppColors.border),
-                      ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Confirm
-                  Expanded(
-                    flex: 2,
-                    child: ElevatedButton(
-                      onPressed: (loading || validationError != null)
-                          ? null
-                          : () async {
-                              setState(() => loading = true);
-                              await widget.onConfirm(selectedType);
-                            },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: selectedType == 'in'
-                            ? AppColors.success
-                            : AppColors.error,
-                        disabledBackgroundColor: AppColors.border,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                    const SizedBox(width: 12),
+                    // Confirm
+                    Expanded(
+                      flex: 2,
+                      child: ElevatedButton(
+                        onPressed: (loading || validationError != null)
+                            ? null
+                            : () async {
+                                setState(() => loading = true);
+                                await widget.onConfirm(selectedType);
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: selectedType == 'in'
+                              ? AppColors.success
+                              : AppColors.error,
+                          disabledBackgroundColor: AppColors.border,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 0,
                         ),
-                        elevation: 0,
-                      ),
-                      child: loading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  selectedType == 'in'
-                                      ? Icons.login_rounded
-                                      : Icons.logout_rounded,
-                                  size: 18,
+                        child: loading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
                                   color: Colors.white,
+                                  strokeWidth: 2.5,
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  selectedType == 'in'
-                                      ? 'Confirm Punch IN'
-                                      : 'Confirm Punch OUT',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    selectedType == 'in'
+                                        ? Icons.login_rounded
+                                        : Icons.logout_rounded,
+                                    size: 18,
                                     color: Colors.white,
                                   ),
-                                ),
-                              ],
-                            ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    selectedType == 'in'
+                                        ? 'Confirm Punch IN'
+                                        : 'Confirm Punch OUT',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-          ],
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );
