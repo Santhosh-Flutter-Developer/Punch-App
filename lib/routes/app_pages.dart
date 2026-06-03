@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:punch_app/presentation/attendance/binding/attendance_binding.dart';
 import 'package:punch_app/presentation/attendance/ui/attendance.dart';
 import 'package:punch_app/presentation/attendance/ui/punch_time_adjustment.dart';
+import 'package:punch_app/presentation/auth/forgot_password/controller/forgot_password_controller.dart';
+import 'package:punch_app/presentation/auth/forgot_password/ui/forgot_password.dart';
 import 'package:punch_app/presentation/auth/login/controller/login_controller.dart';
 import 'package:punch_app/presentation/auth/login/ui/login.dart';
 import 'package:punch_app/presentation/auth/middleware/auth_middleware.dart';
@@ -139,6 +141,13 @@ class AppPages {
       name: AppRoutes.routeFaceDetection,
       page: () => FaceDetection(
       ),
+    ),
+    GetPage(
+      name: AppRoutes.routeForgotPassword,
+      page: () => const ForgotPassword(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => ForgotPasswordController());
+      }),
     ),
   ];
 }

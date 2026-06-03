@@ -19,4 +19,5 @@ class AppRoutes {
   static const String routeFaceRecognition = '/face-recognition';
   static const String routeKioskAttendance = '/kiosk-attendance';
   static const String routeFaceDetection = '/face-detection';
+  static const String routeForgotPassword = '/forgot-password';
 }
