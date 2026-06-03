@@ -113,6 +113,7 @@ class FaceRecognitionViewState extends State<FaceDetection> {
   Future<void> _loadTodayLogs() async {
     if (employee == null) return;
     if (employee!.id.isEmpty) return;
+    if(employee!.companyId.isEmpty) return;
     final today = NetworkTime.now().toIso8601String().substring(0, 10);
     try {
       final rows = await attendanceController.repo.getAttendanceLogs(
@@ -204,7 +205,7 @@ class FaceRecognitionViewState extends State<FaceDetection> {
     final employees = await EmployeeRepository().getAllEmployees(
       auth.kioskCompId.value,
     );
-    allEmployees.value = employees;
+    allEmployees.value =employees.isNotEmpty? employees : [];
   }
 
   Future<bool> onFaceDetected(faces) async {
@@ -411,7 +412,7 @@ class FaceRecognitionViewState extends State<FaceDetection> {
           await NetworkTime.syncTime();
           if (!mounted) return false;
           // ── Load today's punch history ────────────────────
-          if (employee != null && employee!.id.isNotEmpty) {
+          if (employee != null && employee!.id.isNotEmpty && employee!.companyId.isNotEmpty) {
             await _loadTodayLogs();
           }
           if (!mounted) return false;

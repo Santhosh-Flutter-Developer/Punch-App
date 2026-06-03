@@ -92,7 +92,7 @@ class AttendanceExportService {
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text('ATTENDANCE REPORT',
+                      pw.Text('PUNCH APP',
                           style: pw.TextStyle(
                               font: fontBold, fontSize: 14,
                               color: PdfColors.white)),
@@ -459,7 +459,7 @@ class AttendanceExportService {
 
     // Row 0: title
     final t = sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0));
-    t.value = TextCellValue('ATTENDANCE REPORT  |  $dateRange');
+    t.value = TextCellValue('PUNCH APP - ATTENDANCE REPORT  |  $dateRange');
     // Span title across columns A-G so it's fully visible
     sheet.merge(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0),
         CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: 0));
@@ -489,7 +489,7 @@ class AttendanceExportService {
 
     // Row 3: column headers
     const headers = [
-      'Emp Code', 'Employee Name', 'Department',
+      'Emp Code', 'Employee Name',
       'Date', 'IN Punches', 'OUT Punches', 'Total Hours',
     ];
     for (var c = 0; c < headers.length; c++) {
@@ -535,22 +535,22 @@ class AttendanceExportService {
 
       writeCell(0, emp?.employeeCode     as String? ?? '');
       writeCell(1, emp?.fullName         as String? ?? 'Unknown', bold: true);
-      writeCell(2, emp?.department?.name as String? ?? '');
-      writeCell(3, _fmtDate(date));
-      writeCell(4, inStr,  fgHex: inLogs.isNotEmpty  ? '#16A34A' : '#94A3B8');
-      writeCell(5, outStr, fgHex: outLogs.isNotEmpty ? '#DC2626' : '#94A3B8');
-      writeCell(6, _totalHrs(totalMins),
+      // writeCell(2, emp?.department?.name as String? ?? '');
+      writeCell(2, _fmtDate(date));
+      writeCell(3, inStr,  fgHex: inLogs.isNotEmpty  ? '#16A34A' : '#94A3B8');
+      writeCell(4, outStr, fgHex: outLogs.isNotEmpty ? '#DC2626' : '#94A3B8');
+      writeCell(5, _totalHrs(totalMins),
           bold: totalMins > 0,
           fgHex: totalMins > 0 ? '#16A34A' : '#94A3B8');
     }
 
     sheet.setColumnWidth(0, 16);
     sheet.setColumnWidth(1, 26);
-    sheet.setColumnWidth(2, 24);
-    sheet.setColumnWidth(3, 14);
+    // sheet.setColumnWidth(2, 24);
+    sheet.setColumnWidth(2, 14);
+    sheet.setColumnWidth(3, 45);
     sheet.setColumnWidth(4, 45);
-    sheet.setColumnWidth(5, 45);
-    sheet.setColumnWidth(6, 14);
+    sheet.setColumnWidth(5, 14);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
