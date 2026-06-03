@@ -19,6 +19,7 @@ class FilterSheetState extends State<FilterSheet> {
   late DateTime? from;
   late DateTime? to;
   String? empId;
+  String? selectedPreset; // tracks which quick-select chip is active
   final auth = Get.find<AuthController>();
 
   late final EmployeeController empCtrl;
@@ -33,6 +34,8 @@ class FilterSheetState extends State<FilterSheet> {
         ? auth.employeeId
         : widget.controller.filterEmployeeId.value;
     empCtrl = Get.find<EmployeeController>();
+    // Read persisted preset directly from controller — no guesswork
+    selectedPreset = widget.controller.activePreset.value;
   }
 
   String fmtDate(DateTime? d) {
@@ -53,12 +56,18 @@ class FilterSheetState extends State<FilterSheet> {
         child: child!,
       ),
     );
-    if (d != null && mounted) setState(() => isFrom ? from = d : to = d);
+    if (d != null && mounted) {
+      setState(() {
+        isFrom ? from = d : to = d;
+        selectedPreset = null; // manual pick clears the quick-select highlight
+      });
+    }
   }
 
   void quickSelect(String preset) {
     final now = NetworkTime.now();
     setState(() {
+      selectedPreset = preset;
       switch (preset) {
         case 'today':
           from = now;
@@ -129,10 +138,14 @@ class FilterSheetState extends State<FilterSheet> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  QuickBtn('Today', () => quickSelect('today')),
-                  QuickBtn('This Week', () => quickSelect('week')),
-                  QuickBtn('This Month', () => quickSelect('month')),
-                  QuickBtn('Last Month', () => quickSelect('last_month')),
+                  QuickBtn('Today', () => quickSelect('today'),
+                      isSelected: selectedPreset == 'today'),
+                  QuickBtn('This Week', () => quickSelect('week'),
+                      isSelected: selectedPreset == 'week'),
+                  QuickBtn('This Month', () => quickSelect('month'),
+                      isSelected: selectedPreset == 'month'),
+                  QuickBtn('Last Month', () => quickSelect('last_month'),
+                      isSelected: selectedPreset == 'last_month'),
                 ],
               ),
             ),
@@ -234,6 +247,7 @@ class FilterSheetState extends State<FilterSheet> {
                   child: OutlinedButton(
                     onPressed: () {
                       widget.controller.clearFilters();
+                      setState(() => selectedPreset = null);
                       Navigator.pop(context);
                     },
                     style: OutlinedButton.styleFrom(
@@ -253,6 +267,7 @@ class FilterSheetState extends State<FilterSheet> {
                         from: from,
                         to: to,
                         employeeId: empId ?? '',
+                        preset: selectedPreset, // persist the chosen chip
                       );
                       Navigator.pop(context);
                     },

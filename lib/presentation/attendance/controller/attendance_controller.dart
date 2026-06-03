@@ -27,6 +27,7 @@ class AttendanceController extends GetxController {
   final RxBool showErr = true.obs;
   final filterEmployeeId = RxnString();
   final filterDepartmentId = RxnString();
+  final activePreset = RxnString(); 
 
   // View mode: 'table' or 'grid'
   final viewMode = 'table'.obs;
@@ -38,6 +39,7 @@ class AttendanceController extends GetxController {
     final now = NetworkTime.now();
     fromDate.value = DateTime(now.year, now.month, 1);
     toDate.value = now;
+    activePreset.value = 'month';
     loadLogs();
   }
 
@@ -63,6 +65,7 @@ class AttendanceController extends GetxController {
     DateTime? to,
     String? employeeId,
     String? departmentId,
+     String? preset,
   }) {
     if (from != null) fromDate.value = from;
     if (to != null) toDate.value = to;
@@ -72,6 +75,7 @@ class AttendanceController extends GetxController {
     if (departmentId != null) {
       filterDepartmentId.value = departmentId == '' ? null : departmentId;
     }
+    activePreset.value = preset;
     loadLogs();
   }
 
@@ -81,6 +85,7 @@ class AttendanceController extends GetxController {
     toDate.value = now;
     filterEmployeeId.value = null;
     filterDepartmentId.value = null;
+    activePreset.value = 'month';
     loadLogs();
   }
 
