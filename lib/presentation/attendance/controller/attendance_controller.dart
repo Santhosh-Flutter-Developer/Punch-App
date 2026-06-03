@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class AttendanceController extends GetxController {
   final RxBool showErr = true.obs;
   final filterEmployeeId = RxnString();
   final filterDepartmentId = RxnString();
-  final activePreset = RxnString(); 
+  final activePreset = RxnString();
 
   // View mode: 'table' or 'grid'
   final viewMode = 'table'.obs;
@@ -65,7 +66,7 @@ class AttendanceController extends GetxController {
     DateTime? to,
     String? employeeId,
     String? departmentId,
-     String? preset,
+    String? preset,
   }) {
     if (from != null) fromDate.value = from;
     if (to != null) toDate.value = to;
@@ -199,10 +200,10 @@ class AttendanceController extends GetxController {
       }
 
       final freshLogs = await repo.getAttendanceLogs(
-      companyId,
-      date: newPunchTime,
-      employeeId: empId,
-    );
+        companyId,
+        date: newPunchTime,
+        employeeId: empId,
+      );
 
       // ... rest of existing validation (sequence check, time check) ...
       final sameDayLogs =
@@ -264,25 +265,42 @@ class AttendanceController extends GetxController {
     }
   }
 
+  String fmtDate(DateTime d) =>
+      '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+
   void confirmDelete(BuildContext context, String id) {
+    // log(
+    //   "ABuddy:${a?.employee?.fullName}-(${fmtDate(a!.date)}-${fmtTime(a.punchTime)})",
+    // );
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Delete Report'),
-        content: const Text('Are you sure you want to delete this record?'),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              deleteLog(id);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Delete'),
+      builder: (_) {
+        var rec = logs.firstWhereOrNull((l) => l.id == id);
+        return AlertDialog(
+          insetPadding: EdgeInsets.all(10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ],
-      ),
+          title: const Text('Delete Report'),
+          content: Text(
+            'Are you sure you want to delete this record ${rec?.employee?.fullName} - (${fmtDate(rec!.date)} - ${fmtTime(rec.punchTime)})?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Get.back();
+                deleteLog(id);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
 
