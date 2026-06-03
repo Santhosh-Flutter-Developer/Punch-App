@@ -1568,6 +1568,7 @@ class _StepLoginDocs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    RxBool passwordVisible = false.obs;
     String? validatePassword(String? value) {
       if (value == null || value.isEmpty) {
         return 'Password cannot be empty';
@@ -1625,16 +1626,20 @@ class _StepLoginDocs extends StatelessWidget {
                     xs: 12,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 16.0),
-                      child: SriTextField(
+                      child:Obx(()=> SriTextField(
                         controller: state.password,
                         label: !state.isEdit ? 'Password *' : 'Password',
                         prefixIcon: Icons.lock_outline_rounded,
-                        obscureText: true,
+                        suffixIcon: passwordVisible.value
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        onSuffixTap: () => passwordVisible.value = !passwordVisible.value,
+                        obscureText: !passwordVisible.value,
                         hint: 'Leave blank for no login access',
                         validator: !state.isEdit || state.emailChanged
                             ? validatePassword
                             : null,
-                      ),
+                      )),
                     ),
                   ),
                 ],
