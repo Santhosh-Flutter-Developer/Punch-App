@@ -198,7 +198,10 @@ class EmployeeController extends GetxController {
   Future<void> loadEmployees() async {
     isLoading.value = true;
     try {
-      employees.value = await _repo.getEmployees(auth.companyId);
+      final list = await _repo.getEmployees(auth.companyId);
+       list.sort((a, b) => (a.createdAt ?? DateTime(0))
+        .compareTo(b.createdAt ?? DateTime(0)));
+     employees.value = list;   
     } catch (e) {
       showError('Failed to load employees: $e');
     } finally {
@@ -349,7 +352,7 @@ class EmployeeController extends GetxController {
 
       // ── Reload with joins ───────────────────────────────
       final full = await _repo.getEmployee(emp.id) ?? emp;
-      employees.insert(0, full);
+      employees.add(full);
       showSuccess('Employee "${emp.fullName}" created successfully');
     } catch (e) {
       debugPrint('[EmpCtrl] createEmployee ERROR: $e');

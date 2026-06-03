@@ -33,6 +33,7 @@ class EmployeeModel {
   final bool mobileLogin;
   final bool outsideOffice;
   final bool isActive;
+  final DateTime? createdAt;
 
   // Joined
   final DepartmentModel? department;
@@ -70,6 +71,7 @@ class EmployeeModel {
     this.profileTemplate,
     this.department,
     this.role,
+    this.createdAt,
   });
 
   factory EmployeeModel.fromJson(Map<String, dynamic> j) => EmployeeModel(
@@ -113,6 +115,7 @@ class EmployeeModel {
     role: j['roles'] != null
         ? RoleModel.fromJson(j['roles'] as Map<String, dynamic>)
         : null,
+    createdAt: j['created_at'] != null ? DateTime.tryParse(j['created_at'] as String) : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -144,5 +147,6 @@ class EmployeeModel {
     'mobile_login': mobileLogin,
     'outside_office': outsideOffice,
     'is_active': isActive,
+    'created_at': createdAt?.toIso8601String(),
   };
 }
