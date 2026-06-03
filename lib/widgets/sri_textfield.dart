@@ -49,6 +49,7 @@ class SriTextField extends StatelessWidget {
       readOnly: readOnly,
       onTap: onTap,
       onChanged: onChanged,
+      maxLength: keyboardType == TextInputType.phone ? 10 : null,
       validator: validator,
       enabled: enabled,
       decoration: InputDecoration(

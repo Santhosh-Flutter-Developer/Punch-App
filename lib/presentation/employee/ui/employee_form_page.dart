@@ -783,7 +783,7 @@ class _StepBasicState extends State<_StepBasic> {
           isCheckingMobile = false;
           mobileError = exists ? 'This mobile is already registered' : null;
         });
-        Future.delayed(const Duration(seconds: 2), () {
+        Future.delayed(const Duration(seconds: 1), () {
           setState(() => widget.state.mobileCheck = false);
         });
       }
@@ -1031,14 +1031,15 @@ class _StepBasicState extends State<_StepBasic> {
                               )
                             : null,
                         validator: (v) {
-                          if (widget.state.mobileCheck) {
-                            return 'Checking mobile...';
-                          }
+                          
                           if (v?.isEmpty == true) {
                             return 'Mobile Number is Required';
                           }
                           if (v!.length != 10) return 'Enter 10 digits';
                           if (mobileError != null) return mobileError; // ← add
+                          if (widget.state.mobileCheck) {
+                            return 'Checking mobile...';
+                          }
                           return null;
                         },
                       ),
