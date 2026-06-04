@@ -44,13 +44,31 @@ class AttendanceController extends GetxController {
   }
 
   Future<void> loadLogs() async {
+    // In kiosk mode, currentUser is null so companyId and employeeId are both
+    // empty strings — passing an empty string to a UUID column causes:
+    //   PostgrestException: invalid input syntax for type uuid: ""
+    // Skip loading altogether; kiosk attendance is handled via face_detection.dart.
+    if (auth.companyId.isEmpty) {
+      debugPrint('[AttendCtrl] loadLogs skipped — companyId is empty (kiosk mode?)');
+      return;
+    }
+
+    // For non-admin users the employeeId filter is applied. If the id is empty
+    // (e.g. session not fully restored yet) skip the query to avoid the UUID error.
+    final String? employeeIdFilter =
+        !auth.isAdmin ? auth.employeeId : filterEmployeeId.value;
+    if (!auth.isAdmin && (employeeIdFilter == null || employeeIdFilter.isEmpty)) {
+      debugPrint('[AttendCtrl] loadLogs skipped — employeeId is empty');
+      return;
+    }
+
     isLoading.value = true;
     try {
       logs.value = await repo.getAttendanceLogs(
         auth.companyId,
         fromDate: fromDate.value,
         toDate: toDate.value,
-        employeeId: !auth.isAdmin ? auth.employeeId : filterEmployeeId.value,
+        employeeId: employeeIdFilter,
       );
     } catch (e) {
       debugPrint('[AttendCtrl] load error: $e');

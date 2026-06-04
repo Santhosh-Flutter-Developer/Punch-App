@@ -34,7 +34,9 @@ class AttendanceRepository {
     if (toDate != null) {
       query = query.lte('date', toDate.toIso8601String().substring(0, 10));
     }
-    if (employeeId != null) query = query.eq('employee_id', employeeId);
+    if (employeeId != null && employeeId.isNotEmpty) {
+      query = query.eq('employee_id', employeeId);
+    }
 
     final rows = await query.order('punch_time');
     final result = <AttendanceLogModel>[];
