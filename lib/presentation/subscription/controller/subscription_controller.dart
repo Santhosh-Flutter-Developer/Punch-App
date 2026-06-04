@@ -25,7 +25,12 @@ class SubscriptionController extends GetxController {
   Future<void> load() async {
     isLoading.value = true;
     try {
-      subscription.value = await repo.getActiveSubscription(auth.companyId);
+      // Prefer org-level subscription; fall back to branch-level
+      final orgId = auth.activeOrgId.value;
+      if (orgId.isNotEmpty) {
+        subscription.value = await repo.getActiveSubscriptionByOrg(orgId);
+      }
+      subscription.value ??= await repo.getActiveSubscription(auth.companyId);
       plans.value = await repo.getPlans();
     } catch (e) {
       log("ERROR: $e");

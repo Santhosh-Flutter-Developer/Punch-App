@@ -30,6 +30,10 @@ class AuthController extends GetxController {
   final activeCompanyId = ''.obs;
   final RxString kioskCompId = "".obs;
 
+  /// The organisation ID that the current user belongs to.
+  /// All branches under the same org share a single subscription limit.
+  final activeOrgId = ''.obs;
+
   // Computed
   String get companyId => activeCompanyId.value.isNotEmpty
       ? activeCompanyId.value
@@ -283,7 +287,37 @@ class AuthController extends GetxController {
       }
     }
 
-    // Load subscription
+    // Load subscription — organisation-wide (all branches share one limit)
+    // 1. Resolve the org_id for the current company
+    final orgId = await subRepo.getOrgId(user.companyId);
+    if (orgId != null && orgId.isNotEmpty) {
+      activeOrgId.value = orgId;
+      // 2. Find the active subscription for the whole org
+      final sub = await subRepo.getActiveSubscriptionByOrg(orgId);
+      if (sub != null) {
+        subscription.value = sub;
+        isSubscriptionActive.value = sub.isActive;
+        if (sub.isExpiringSoon) {
+          Future.delayed(const Duration(seconds: 2), () {
+            Get.snackbar(
+              '⚠ Subscription Expiring',
+              'Your plan expires in ${sub.daysRemaining} day(s). Renew now!',
+              snackPosition: SnackPosition.TOP,
+              backgroundColor: Colors.orange.shade700,
+              colorText: Colors.white,
+              duration: const Duration(seconds: 5),
+              mainButton: TextButton(
+                onPressed: () => Get.toNamed(AppRoutes.routeSubscription),
+                child: const Text('Renew', style: TextStyle(color: Colors.white)),
+              ),
+            );
+          });
+        }
+        return;
+      }
+    }
+
+    // Fallback: per-branch subscription (legacy / single-branch orgs)
     final subRow = await authRepo.getSubscription(user.companyId);
     if (subRow != null) {
       subscription.value = SubscriptionModel.fromJson(subRow);

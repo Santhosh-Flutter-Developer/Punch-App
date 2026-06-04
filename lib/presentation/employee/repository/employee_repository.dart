@@ -130,4 +130,29 @@ class EmployeeRepository {
         .count();
     return res.count;
   }
+
+  /// Counts ALL active employees across every branch that belongs to [orgId].
+  /// This is used to enforce the organisation-wide subscription limit.
+  Future<int> countEmployeesByOrg(String orgId) async {
+    // Get all company IDs that belong to this org
+    final companies = await SupabaseService.client
+        .from('companies')
+        .select('id')
+        .eq('org_id', orgId)
+        .eq('is_active', true);
+
+    if ((companies as List).isEmpty) return 0;
+
+    final companyIds = companies.map((c) => c['id'] as String).toList();
+
+    // Count active employees across all those branches
+    final res = await SupabaseService.client
+        .from('employees')
+        .select()
+        .inFilter('company_id', companyIds)
+        .eq('is_active', true)
+        .count();
+
+    return res.count;
+  }
 }

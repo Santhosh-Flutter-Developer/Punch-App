@@ -30,7 +30,7 @@ class Employee extends StatelessWidget {
           title: 'Employee',
           actions: [
             if (auth.canAdd('employee') &&
-                (controller.employees.length <
+                (controller.orgEmployeeCount.value <
                     auth.subscription.value!.userLimit))
               isWide
                   ? SriButton(
@@ -112,7 +112,7 @@ class Employee extends StatelessWidget {
                             icon: Icons.people_outline,
                             actionLabel:
                                 auth.canAdd('employee') &&
-                                    (controller.employees.length <
+                                    (controller.orgEmployeeCount.value <
                                         auth.subscription.value!.userLimit)
                                 ? 'Add Employee'
                                 : null,

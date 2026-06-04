@@ -29,6 +29,10 @@ class EmployeeController extends GetxController {
   File? faceImage;
   final selectedProfile = Rx<File?>(null);
 
+  /// Total active employees across ALL branches in this organisation.
+  /// Compared against the org-wide subscription user_limit.
+  final orgEmployeeCount = 0.obs;
+
   final facesdkPlugin = FacesdkPlugin();
   final RxString warningStates = "".obs;
   final RxBool visibleWarnings = false.obs;
@@ -73,6 +77,7 @@ class EmployeeController extends GetxController {
       faceInit();
     }
     loadEmployees();
+    loadOrgEmployeeCount();
   }
 
   Future<File> uint8ListToFile(Uint8List bytes, String fileName) async {
@@ -209,6 +214,21 @@ class EmployeeController extends GetxController {
     }
   }
 
+  /// Refreshes the org-wide employee count used to enforce the subscription limit.
+  Future<void> loadOrgEmployeeCount() async {
+    try {
+      final orgId = auth.activeOrgId.value;
+      if (orgId.isNotEmpty) {
+        orgEmployeeCount.value = await _repo.countEmployeesByOrg(orgId);
+      } else {
+        // Fallback: count only current branch (single-branch orgs)
+        orgEmployeeCount.value = await _repo.countEmployees(auth.companyId);
+      }
+    } catch (e) {
+      debugPrint('[EmpCtrl] loadOrgEmployeeCount ERROR: $e');
+    }
+  }
+
   Future<EmployeeModel?> getEmployee(String id) async {
     try {
       final emp = await _repo.getEmployeeUserId(id);
@@ -235,6 +255,21 @@ class EmployeeController extends GetxController {
   }) async {
     isLoading.value = true;
     try {
+      // ── Organisation-wide employee limit check ──────────
+      final sub = auth.subscription.value;
+      if (sub != null) {
+        await loadOrgEmployeeCount(); // refresh before checking
+        if (orgEmployeeCount.value >= sub.userLimit) {
+          showError(
+            'Employee limit reached. Your ${sub.plan.name} plan allows '
+            '${sub.userLimit} employees across all branches. '
+            'Please upgrade your plan to add more.',
+          );
+          isLoading.value = false;
+          return;
+        }
+      }
+
       // ── Pull out non-column values before sanitising ────
       final String? loginPassword = rawData.remove('password') as String?;
       final String? loginUsername = rawData.remove('username') as String?;
@@ -353,6 +388,7 @@ class EmployeeController extends GetxController {
       // ── Reload with joins ───────────────────────────────
       final full = await _repo.getEmployee(emp.id) ?? emp;
       employees.add(full);
+      await loadOrgEmployeeCount(); // keep org count in sync
       showSuccess('Employee "${emp.fullName}" created successfully');
     } catch (e) {
       debugPrint('[EmpCtrl] createEmployee ERROR: $e');
@@ -688,6 +724,7 @@ class EmployeeController extends GetxController {
       }
 
       employees.removeWhere((e) => e.id == id);
+      await loadOrgEmployeeCount(); // keep org count in sync
       showSuccess('Employee deleted');
     } catch (e) {
       showError('Failed to delete: $e');
