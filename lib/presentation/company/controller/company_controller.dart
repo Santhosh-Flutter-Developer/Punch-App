@@ -430,7 +430,7 @@ class CompanyController extends GetxController {
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           SriButton(
-            label: "Delete",
+            label: "Yes",
             onPressed: () {
               Get.back();
               controller.deleteBranch(c.id);

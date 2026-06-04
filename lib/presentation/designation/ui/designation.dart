@@ -216,7 +216,7 @@ class Designation extends StatelessWidget {
               ctrl.deleteRole(id);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Delete'),
+            child: const Text('Yes'),
           ),
         ],
       ),

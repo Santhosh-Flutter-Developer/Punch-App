@@ -188,7 +188,7 @@ class EmployeeController extends GetxController {
               ctrl.deleteEmployee(id);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Delete'),
+            child: const Text('Yes'),
           ),
         ],
       ),
