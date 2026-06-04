@@ -87,7 +87,7 @@ class _AddBranchFormState extends State<AddBranchForm> {
                                 label: 'Branch Name *',
                                 prefixIcon: Icons.business_rounded,
                                 validator: (v) =>
-                                    v?.isEmpty == true ? 'Required' : null,
+                                    v?.isEmpty == true ? 'Branch Name is Required' : null,
                               ),
                             ),
                           ),
@@ -104,9 +104,11 @@ class _AddBranchFormState extends State<AddBranchForm> {
                               ),
                               child: SriTextField(
                                 controller: code,
-                                label: 'Branch Code',
+                                label: 'Branch Code *',
                                 prefixIcon: Icons.tag_rounded,
                                 hint: 'e.g. BR-01',
+                                validator: (v) =>
+                                    v?.isEmpty == true ? 'Branch Code is Required' : null,
                               ),
                             ),
                           ),
@@ -285,16 +287,16 @@ class _AddBranchFormState extends State<AddBranchForm> {
   void submit() {
     if (!formKey.currentState!.validate()) return;
     widget.controller.addBranch({
-      'name': name.text.trim(),
+      'name': name.text.trim().isEmpty? null : name.text.trim(),
       'branch_code': code.text.trim().isEmpty ? null : code.text.trim(),
-      'phone': phone.text.trim(),
-      'email': email.text.trim(),
-      'gstin': gstin.text.trim(),
-      'address': address.text.trim(),
-      'country': country.text.trim(),
-      'state': state.text.trim(),
-      'city': city.text.trim(),
-      'pincode': pincode.text.trim(),
+      'phone': phone.text.trim().isEmpty? null: phone.text.trim(),
+      'email': email.text.trim().isEmpty? null: email.text.trim(),
+      'gstin': gstin.text.trim().isEmpty? null: gstin.text.trim(),
+      'address': address.text.trim().isEmpty? null: address.text.trim(),
+      'country': country.text.trim().isEmpty? null: country.text.trim(),
+      'state': state.text.trim().isEmpty? null: state.text.trim(),
+      'city': city.text.trim().isEmpty? null: city.text.trim(),
+      'pincode': pincode.text.trim().isEmpty? null: pincode.text.trim(),
     });
     Get.back();
   }

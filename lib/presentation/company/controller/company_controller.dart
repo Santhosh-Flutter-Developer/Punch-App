@@ -196,7 +196,7 @@ class CompanyController extends GetxController {
         'add_company_branch',
         params: {
           'p_org_id': oid,
-          'p_company_name': data['name'],
+          'p_company_name': data['name']??null,
           'p_branch_code': data['branch_code'],
           'p_gstin': data['gstin'],
           'p_phone': data['phone'],

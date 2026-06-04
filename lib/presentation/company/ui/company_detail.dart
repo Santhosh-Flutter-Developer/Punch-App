@@ -229,7 +229,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
                             readOnly: !editing,
                             prefixIcon: Icons.business_rounded,
                             validator: (v) =>
-                                v?.isEmpty == true ? 'Required' : null,
+                                v?.isEmpty == true ? 'Company Name is Required' : null,
                           ),
                         ),
                       ),
@@ -246,9 +246,11 @@ class _CompanyDetailState extends State<CompanyDetail> {
                           ),
                           child: SriTextField(
                             controller: branchCode,
-                            label: 'Branch Code',
+                            label: 'Branch Code *',
                             readOnly: !editing,
                             prefixIcon: Icons.tag_rounded,
+                            validator: (v) =>
+                                v?.isEmpty == true ? 'Branch Code is Required' : null,
                           ),
                         ),
                       ),
