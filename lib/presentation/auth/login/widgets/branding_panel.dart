@@ -57,7 +57,7 @@ class BrandingPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'From clock-in to payroll — manage attendance, leaves, and your entire team effortlessly.',
+            'From clock-in to payroll — manage attendance, and your entire team effortlessly.',
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
               fontSize: isWide ? 15.0 : 14.0,
