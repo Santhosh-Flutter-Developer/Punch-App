@@ -45,7 +45,7 @@ class BrandingPanel extends StatelessWidget {
           ),
           SizedBox(height: isWide ? 40.0 : 24.0),
           Text(
-            'Multi-Company HR Management',
+            'Your Workforce, One Smart Platform',
             style: TextStyle(
               color: Colors.white,
               fontSize: isWide ? 36.0 : 16.0,
@@ -57,7 +57,7 @@ class BrandingPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Streamline attendance, leaves, payroll and more — all in one platform.',
+            'From clock-in to payroll — manage attendance, leaves, and your entire team effortlessly.',
             style: TextStyle(
               color: Colors.white.withOpacity(0.7),
               fontSize: isWide ? 15.0 : 14.0,
@@ -66,10 +66,11 @@ class BrandingPanel extends StatelessWidget {
           ),
           SizedBox(height: isWide ? 40.0 : 20.0),
           ...[
-            ('✓ Multi-tenant isolation'),
-            ('✓ Role-based access control'),
-            ('✓ Real-time attendance tracking'),
-            ('✓ Complete HR workflow'),
+            ('✓ Punch in & out seamlessly'),
+
+            ('✓ Holiday management'),
+            ('✓ Face recognition attendance'),
+            ('✓ Multi-branch effectively'),
           ].map(
             (text) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
