@@ -172,7 +172,7 @@ class _AddBranchFormState extends State<AddBranchForm> {
       phoneError = null;
     });
     _phoneDebounce = Timer(const Duration(milliseconds: 600), () async {
-      final exists = await widget.controller.isBranchPhoneExists(value.trim());
+      final exists = await widget.controller.isPhoneGloballyExists(value.trim());
       if (!mounted) return;
       setState(() {
         isCheckingPhone = false;
@@ -204,7 +204,7 @@ class _AddBranchFormState extends State<AddBranchForm> {
     });
     _emailDebounce = Timer(const Duration(milliseconds: 600), () async {
       final exists =
-          await widget.controller.isBranchEmailExists(value.trim());
+          await widget.controller.isEmailGloballyExists(value.trim());
       if (!mounted) return;
       setState(() {
         isCheckingEmail = false;

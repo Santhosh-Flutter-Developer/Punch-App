@@ -58,24 +58,20 @@ class CompanyRepository {
     return (rows as List).isNotEmpty;
   }
 
-  /// Returns true if [gstin] is already used by another branch in the same org.
+  /// Returns true if [gstin] is already used by ANY company globally.
+  /// Pass [excludeCompanyId] when editing so the current branch is excluded.
   Future<bool> isGstinExists(
-    String gstin,
-    String orgId, {
+    String gstin, {
     String? excludeCompanyId,
   }) async {
-    var query = SupabaseService.client
-        .from('companies')
-        .select('id')
-        .eq('org_id', orgId)
-        .ilike('gstin', gstin.trim());
-
-    if (excludeCompanyId != null) {
-      query = query.neq('id', excludeCompanyId);
-    }
-
-    final rows = await query.limit(1);
-    return (rows as List).isNotEmpty;
+    final result = await SupabaseService.client.rpc(
+      'check_gstin_globally_exists',
+      params: {
+        'p_gstin': gstin.trim().toUpperCase(),
+        'p_exclude_company_id': excludeCompanyId,
+      },
+    );
+    return result as bool;
   }
 
   /// Returns true if [phone] is already used by another branch in the same org.
@@ -116,5 +112,41 @@ class CompanyRepository {
 
     final rows = await query.limit(1);
     return (rows as List).isNotEmpty;
+  }
+
+  // ── GLOBAL uniqueness checks (across ALL orgs + employees) ──
+
+  /// Returns true if [phone] exists in **any** company OR any employee record
+  /// anywhere in the system. Pass [excludeCompanyId] when editing a branch.
+  Future<bool> isPhoneGloballyExists(
+    String phone, {
+    String? excludeCompanyId,
+  }) async {
+    final result = await SupabaseService.client.rpc(
+      'check_phone_globally_exists',
+      params: {
+        'p_phone': phone.trim(),
+        'p_exclude_company_id': excludeCompanyId,
+        'p_exclude_employee_id': null,
+      },
+    );
+    return result as bool;
+  }
+
+  /// Returns true if [email] exists in **any** company OR any employee record
+  /// anywhere in the system. Pass [excludeCompanyId] when editing a branch.
+  Future<bool> isEmailGloballyExists(
+    String email, {
+    String? excludeCompanyId,
+  }) async {
+    final result = await SupabaseService.client.rpc(
+      'check_email_globally_exists',
+      params: {
+        'p_email': email.trim().toLowerCase(),
+        'p_exclude_company_id': excludeCompanyId,
+        'p_exclude_employee_id': null,
+      },
+    );
+    return result as bool;
   }
 }

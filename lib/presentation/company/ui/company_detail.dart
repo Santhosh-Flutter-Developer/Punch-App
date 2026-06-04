@@ -260,7 +260,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
       phoneError = null;
     });
     _phoneDebounce = Timer(const Duration(milliseconds: 600), () async {
-      final exists = await widget.controller.isBranchPhoneExists(
+      final exists = await widget.controller.isPhoneGloballyExists(
         value.trim(),
         excludeCompanyId: widget.company.id,
       );
@@ -296,7 +296,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
       editEmailError = null;
     });
     _emailDebounce = Timer(const Duration(milliseconds: 600), () async {
-      final exists = await widget.controller.isBranchEmailExists(
+      final exists = await widget.controller.isEmailGloballyExists(
         value.trim(),
         excludeCompanyId: widget.company.id,
       );

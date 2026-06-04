@@ -346,16 +346,14 @@ class CompanyController extends GetxController {
     }
   }
 
+  /// Global: GSTIN must be unique across ALL companies.
   Future<bool> isGstinExists(
     String gstin, {
     String? excludeCompanyId,
   }) async {
     try {
-      final oid = orgId ?? await getOrgId();
-      if (oid == null) return false;
       return await repo.isGstinExists(
         gstin,
-        oid,
         excludeCompanyId: excludeCompanyId,
       );
     } catch (e) {
@@ -396,6 +394,38 @@ class CompanyController extends GetxController {
       );
     } catch (e) {
       debugPrint('[CompanyCtrl] isBranchEmailExists ERROR: $e');
+      return false;
+    }
+  }
+
+  /// Global: phone must be unique across ALL companies + ALL employees.
+  Future<bool> isPhoneGloballyExists(
+    String phone, {
+    String? excludeCompanyId,
+  }) async {
+    try {
+      return await repo.isPhoneGloballyExists(
+        phone,
+        excludeCompanyId: excludeCompanyId,
+      );
+    } catch (e) {
+      debugPrint('[CompanyCtrl] isPhoneGloballyExists ERROR: $e');
+      return false;
+    }
+  }
+
+  /// Global: email must be unique across ALL companies + ALL employees.
+  Future<bool> isEmailGloballyExists(
+    String email, {
+    String? excludeCompanyId,
+  }) async {
+    try {
+      return await repo.isEmailGloballyExists(
+        email,
+        excludeCompanyId: excludeCompanyId,
+      );
+    } catch (e) {
+      debugPrint('[CompanyCtrl] isEmailGloballyExists ERROR: $e');
       return false;
     }
   }

@@ -43,9 +43,10 @@ class EmployeeRepository {
     String? excludeEmployeeId,
   }) async {
     final result = await SupabaseService.client.rpc(
-      'check_mobile_exists',
+      'check_phone_globally_exists',
       params: {
-        'p_mobile': mobile.trim(),
+        'p_phone': mobile.trim(),
+        'p_exclude_company_id': null,
         'p_exclude_employee_id': excludeEmployeeId,
       },
     );
@@ -54,10 +55,11 @@ class EmployeeRepository {
 
   Future<bool> isEmailExists(String email, {String? excludeEmployeeId}) async {
     final result = await SupabaseService.client.rpc(
-      'check_email_exists',
+      'check_email_globally_exists',
       params: {
         'p_email': email.trim().toLowerCase(),
-        'p_exclude_employee_id': ?excludeEmployeeId,
+        'p_exclude_company_id': null,
+        'p_exclude_employee_id': excludeEmployeeId,
       },
     );
     return result as bool;
