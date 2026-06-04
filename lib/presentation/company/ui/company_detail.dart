@@ -12,6 +12,8 @@ import 'package:punch_app/presentation/company/widgets/sri_detail_card.dart';
 import 'package:punch_app/widgets/sri_button.dart';
 import 'package:punch_app/widgets/sri_textfield.dart';
 
+// ── Duplicate-check mixin helpers (reused inline) ────────────────────────────
+
 class CompanyDetail extends StatefulWidget {
   final CompanyModel company;
   final CompanyController controller;
@@ -62,6 +64,39 @@ class _CompanyDetailState extends State<CompanyDetail> {
   // Live password validation
   String? passwordError;
 
+  // ── Duplicate-check state for branch fields ──────────────
+  Timer? _nameDebounce;
+  Timer? _codeDebounce;
+  Timer? _gstinDebounce;
+  Timer? _phoneDebounce;
+  Timer? _emailDebounce;
+
+  bool isCheckingName = false;
+  bool isCheckingCode = false;
+  bool isCheckingGstin = false;
+  bool isCheckingPhone = false;
+  bool isCheckingEmail = false;
+
+  String? nameError;
+  String? codeError;
+  String? gstinError;
+  String? phoneError;
+  String? editEmailError;
+
+  bool get _anyFieldChecking =>
+      isCheckingName ||
+      isCheckingCode ||
+      isCheckingGstin ||
+      isCheckingPhone ||
+      isCheckingEmail;
+
+  bool get _hasFieldErrors =>
+      nameError != null ||
+      codeError != null ||
+      gstinError != null ||
+      phoneError != null ||
+      editEmailError != null;
+
   @override
   void initState() {
     super.initState();
@@ -77,6 +112,11 @@ class _CompanyDetailState extends State<CompanyDetail> {
   @override
   void dispose() {
     _usernameDebounce?.cancel();
+    _nameDebounce?.cancel();
+    _codeDebounce?.cancel();
+    _gstinDebounce?.cancel();
+    _phoneDebounce?.cancel();
+    _emailDebounce?.cancel();
     kioskUsernameCtrl.dispose();
     kioskPasswordCtrl.dispose();
     super.dispose();
@@ -104,6 +144,168 @@ class _CompanyDetailState extends State<CompanyDetail> {
 
     return widget.company.kioskUsername != null &&
         currentUsername != originalUsername;
+  }
+
+  // ── Duplicate-check handlers for branch fields ──────────
+
+  void onNameChanged(String value) {
+    _nameDebounce?.cancel();
+    if (value.trim().isEmpty ||
+        value.trim().toLowerCase() == widget.company.name.toLowerCase()) {
+      setState(() {
+        nameError = null;
+        isCheckingName = false;
+      });
+      return;
+    }
+    setState(() {
+      isCheckingName = true;
+      nameError = null;
+    });
+    _nameDebounce = Timer(const Duration(milliseconds: 600), () async {
+      final exists = await widget.controller.isBranchNameExists(
+        value.trim(),
+        excludeCompanyId: widget.company.id,
+      );
+      if (!mounted) return;
+      setState(() {
+        isCheckingName = false;
+        nameError = exists ? 'Branch name already exists' : null;
+      });
+    });
+  }
+
+  void onCodeChanged(String value) {
+    _codeDebounce?.cancel();
+    if (value.trim().isEmpty ||
+        value.trim().toLowerCase() ==
+            (widget.company.branchCode ?? '').toLowerCase()) {
+      setState(() {
+        codeError = null;
+        isCheckingCode = false;
+      });
+      return;
+    }
+    setState(() {
+      isCheckingCode = true;
+      codeError = null;
+    });
+    _codeDebounce = Timer(const Duration(milliseconds: 600), () async {
+      final exists = await widget.controller.isBranchCodeExists(
+        value.trim(),
+        excludeCompanyId: widget.company.id,
+      );
+      if (!mounted) return;
+      setState(() {
+        isCheckingCode = false;
+        codeError = exists ? 'Branch code already exists' : null;
+      });
+    });
+  }
+
+  void onGstinChanged(String value) {
+    _gstinDebounce?.cancel();
+    if (value.trim().isEmpty ||
+        value.trim().toLowerCase() ==
+            (widget.company.gstin ?? '').toLowerCase()) {
+      setState(() {
+        gstinError = null;
+        isCheckingGstin = false;
+      });
+      return;
+    }
+    setState(() {
+      isCheckingGstin = true;
+      gstinError = null;
+    });
+    _gstinDebounce = Timer(const Duration(milliseconds: 600), () async {
+      final exists = await widget.controller.isGstinExists(
+        value.trim(),
+        excludeCompanyId: widget.company.id,
+      );
+      if (!mounted) return;
+      setState(() {
+        isCheckingGstin = false;
+        gstinError = exists ? 'GSTIN already registered' : null;
+      });
+    });
+  }
+
+  static bool _isValidPhone(String v) =>
+      RegExp(r'^[0-9]{10}$').hasMatch(v.trim());
+
+  static bool _isValidEmail(String v) =>
+      RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$').hasMatch(v.trim());
+
+  void onPhoneChanged(String value) {
+    _phoneDebounce?.cancel();
+    if (value.trim().isEmpty ||
+        value.trim() == (widget.company.phone ?? '')) {
+      setState(() {
+        phoneError = null;
+        isCheckingPhone = false;
+      });
+      return;
+    }
+    // Format check first — no API call needed
+    if (!_isValidPhone(value)) {
+      setState(() {
+        phoneError = 'Phone number must be 10 digits';
+        isCheckingPhone = false;
+      });
+      return;
+    }
+    setState(() {
+      isCheckingPhone = true;
+      phoneError = null;
+    });
+    _phoneDebounce = Timer(const Duration(milliseconds: 600), () async {
+      final exists = await widget.controller.isBranchPhoneExists(
+        value.trim(),
+        excludeCompanyId: widget.company.id,
+      );
+      if (!mounted) return;
+      setState(() {
+        isCheckingPhone = false;
+        phoneError = exists ? 'Phone number already registered' : null;
+      });
+    });
+  }
+
+  void onEditEmailChanged(String value) {
+    _emailDebounce?.cancel();
+    if (value.trim().isEmpty ||
+        value.trim().toLowerCase() ==
+            (widget.company.email ?? '').toLowerCase()) {
+      setState(() {
+        editEmailError = null;
+        isCheckingEmail = false;
+      });
+      return;
+    }
+    // Format check first — no API call needed
+    if (!_isValidEmail(value)) {
+      setState(() {
+        editEmailError = 'Enter a valid email address';
+        isCheckingEmail = false;
+      });
+      return;
+    }
+    setState(() {
+      isCheckingEmail = true;
+      editEmailError = null;
+    });
+    _emailDebounce = Timer(const Duration(milliseconds: 600), () async {
+      final exists = await widget.controller.isBranchEmailExists(
+        value.trim(),
+        excludeCompanyId: widget.company.id,
+      );
+      if (!mounted) return;
+      setState(() {
+        isCheckingEmail = false;
+        editEmailError = exists ? 'Email already registered' : null;
+      });
+    });
   }
 
   // ── Live username check (debounced 600ms) ────────────────
@@ -223,13 +425,25 @@ class _CompanyDetailState extends State<CompanyDetail> {
                             top: 20.0,
                             right: isWide ? 8.0 : 0.0,
                           ),
-                          child: SriTextField(
-                            controller: name,
-                            label: 'Company Name *',
-                            readOnly: !editing,
-                            prefixIcon: Icons.business_rounded,
-                            validator: (v) =>
-                                v?.isEmpty == true ? 'Company Name is Required' : null,
+                          child: _dupField(
+                            child: SriTextField(
+                              controller: name,
+                              label: 'Company Name *',
+                              readOnly: !editing,
+                              prefixIcon: Icons.business_rounded,
+                              onChanged: editing ? onNameChanged : null,
+                              suffixIconWidget: editing
+                                  ? _dupStatusIcon(isCheckingName, nameError, name)
+                                  : null,
+                              validator: (v) {
+                                if (v?.isEmpty == true) return 'Company Name is Required';
+                                if (isCheckingName) return 'Checking...';
+                                return nameError;
+                              },
+                            ),
+                            errorText: nameError,
+                            checking: isCheckingName,
+                            ctrl: name,
                           ),
                         ),
                       ),
@@ -244,13 +458,25 @@ class _CompanyDetailState extends State<CompanyDetail> {
                             top: 20.0,
                             left: isWide ? 8.0 : 0.0,
                           ),
-                          child: SriTextField(
-                            controller: branchCode,
-                            label: 'Branch Code *',
-                            readOnly: !editing,
-                            prefixIcon: Icons.tag_rounded,
-                            validator: (v) =>
-                                v?.isEmpty == true ? 'Branch Code is Required' : null,
+                          child: _dupField(
+                            child: SriTextField(
+                              controller: branchCode,
+                              label: 'Branch Code *',
+                              readOnly: !editing,
+                              prefixIcon: Icons.tag_rounded,
+                              onChanged: editing ? onCodeChanged : null,
+                              suffixIconWidget: editing
+                                  ? _dupStatusIcon(isCheckingCode, codeError, branchCode)
+                                  : null,
+                              validator: (v) {
+                                if (v?.isEmpty == true) return 'Branch Code is Required';
+                                if (isCheckingCode) return 'Checking...';
+                                return codeError;
+                              },
+                            ),
+                            errorText: codeError,
+                            checking: isCheckingCode,
+                            ctrl: branchCode,
                           ),
                         ),
                       ),
@@ -265,12 +491,23 @@ class _CompanyDetailState extends State<CompanyDetail> {
                             top: 20.0,
                             right: isWide ? 8.0 : 0.0,
                           ),
-                          child: SriTextField(
-                            controller: phone,
-                            label: 'Phone',
-                            readOnly: !editing,
-                            keyboardType: TextInputType.phone,
-                            prefixIcon: Icons.phone_rounded,
+                          child: _dupField(
+                            child: SriTextField(
+                              controller: phone,
+                              label: 'Phone',
+                              readOnly: !editing,
+                              keyboardType: TextInputType.phone,
+                              prefixIcon: Icons.phone_rounded,
+                              onChanged: editing ? onPhoneChanged : null,
+                              suffixIconWidget: editing
+                                  ? _dupStatusIcon(isCheckingPhone, phoneError, phone)
+                                  : null,
+                              validator: (_) =>
+                                  isCheckingPhone ? 'Checking...' : phoneError,
+                            ),
+                            errorText: phoneError,
+                            checking: isCheckingPhone,
+                            ctrl: phone,
                           ),
                         ),
                       ),
@@ -285,12 +522,23 @@ class _CompanyDetailState extends State<CompanyDetail> {
                             top: 20.0,
                             left: isWide ? 8.0 : 0.0,
                           ),
-                          child: SriTextField(
-                            controller: email,
-                            label: 'Email',
-                            readOnly: !editing,
-                            keyboardType: TextInputType.emailAddress,
-                            prefixIcon: Icons.email_outlined,
+                          child: _dupField(
+                            child: SriTextField(
+                              controller: email,
+                              label: 'Email',
+                              readOnly: !editing,
+                              keyboardType: TextInputType.emailAddress,
+                              prefixIcon: Icons.email_outlined,
+                              onChanged: editing ? onEditEmailChanged : null,
+                              suffixIconWidget: editing
+                                  ? _dupStatusIcon(isCheckingEmail, editEmailError, email)
+                                  : null,
+                              validator: (_) =>
+                                  isCheckingEmail ? 'Checking...' : editEmailError,
+                            ),
+                            errorText: editEmailError,
+                            checking: isCheckingEmail,
+                            ctrl: email,
                           ),
                         ),
                       ),
@@ -305,11 +553,22 @@ class _CompanyDetailState extends State<CompanyDetail> {
                             top: 20.0,
                             right: isWide ? 8.0 : 0.0,
                           ),
-                          child: SriTextField(
-                            controller: gstin,
-                            label: 'GSTIN',
-                            readOnly: !editing,
-                            prefixIcon: Icons.numbers_rounded,
+                          child: _dupField(
+                            child: SriTextField(
+                              controller: gstin,
+                              label: 'GSTIN',
+                              readOnly: !editing,
+                              prefixIcon: Icons.numbers_rounded,
+                              onChanged: editing ? onGstinChanged : null,
+                              suffixIconWidget: editing
+                                  ? _dupStatusIcon(isCheckingGstin, gstinError, gstin)
+                                  : null,
+                              validator: (_) =>
+                                  isCheckingGstin ? 'Checking...' : gstinError,
+                            ),
+                            errorText: gstinError,
+                            checking: isCheckingGstin,
+                            ctrl: gstin,
                           ),
                         ),
                       ),
@@ -522,6 +781,17 @@ class _CompanyDetailState extends State<CompanyDetail> {
                           passwordError = null;
                           usernameVerified =
                               widget.company.kioskUsername != null;
+                          // Reset duplicate check state
+                          nameError = null;
+                          codeError = null;
+                          gstinError = null;
+                          phoneError = null;
+                          editEmailError = null;
+                          isCheckingName = false;
+                          isCheckingCode = false;
+                          isCheckingGstin = false;
+                          isCheckingPhone = false;
+                          isCheckingEmail = false;
                         }),
                         isOutlined: true,
                         label: 'Cancel',
@@ -531,9 +801,10 @@ class _CompanyDetailState extends State<CompanyDetail> {
                     Expanded(
                       child: Obx(
                         () => SriButton(
-                          onPressed:
-                              widget.controller.isLoading.value ||
-                                  isCheckingUsername
+                          onPressed: (widget.controller.isLoading.value ||
+                                  isCheckingUsername ||
+                                  _anyFieldChecking ||
+                                  _hasFieldErrors)
                               ? null
                               : save,
                           isLoading: widget.controller.isLoading.value,
@@ -555,6 +826,30 @@ class _CompanyDetailState extends State<CompanyDetail> {
   // ── Main save (company + kiosk together) ─────────────────
   void save() {
     if (!formKey.currentState!.validate()) return;
+
+    // Guard: duplicate checks still in progress
+    if (_anyFieldChecking) {
+      Get.snackbar(
+        'Please Wait',
+        'Checking for duplicates...',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // Guard: duplicate field errors present
+    if (_hasFieldErrors) {
+      Get.snackbar(
+        'Validation Error',
+        'Please fix the duplicate field errors before saving.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
 
     if (kioskEnabled && isCheckingUsername) {
       Get.snackbar(
@@ -669,6 +964,73 @@ class _CompanyDetailState extends State<CompanyDetail> {
     );
 
     setState(() => editing = false);
+  }
+
+  // ── Duplicate-check helpers ──────────────────────────────
+
+  Widget? _dupStatusIcon(
+    bool checking,
+    String? error,
+    TextEditingController ctrl,
+  ) {
+    if (checking) {
+      return const SizedBox(
+        width: 16,
+        height: 16,
+        child: Padding(
+          padding: EdgeInsets.all(12.0),
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+    if (ctrl.text.isNotEmpty) {
+      if (error != null) {
+        return const Icon(Icons.cancel_rounded, color: Colors.red, size: 18);
+      }
+      return const Icon(
+        Icons.check_circle_rounded,
+        color: AppColors.accentGreen,
+        size: 18,
+      );
+    }
+    return null;
+  }
+
+  Widget _dupField({
+    required Widget child,
+    required String? errorText,
+    required bool checking,
+    required TextEditingController ctrl,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        child,
+        if (errorText != null && !checking && editing) ...[
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.only(left: 12),
+            child: Text(
+              errorText,
+              style: const TextStyle(color: Colors.red, fontSize: 11),
+            ),
+          ),
+        ] else if (!checking && errorText == null && ctrl.text.isNotEmpty && editing) ...[
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.only(left: 12),
+            child: const Text(
+              'Available ✓',
+              style: TextStyle(
+                color: AppColors.accentGreen,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
   }
 
   // ── Attendance Access card ───────────────────────────────

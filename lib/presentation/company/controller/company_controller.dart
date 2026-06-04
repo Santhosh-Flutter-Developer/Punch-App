@@ -308,6 +308,98 @@ class CompanyController extends GetxController {
     return null;
   }
 
+  // ── Duplicate field checks (used by Add & Edit forms) ────
+
+  Future<bool> isBranchNameExists(
+    String name, {
+    String? excludeCompanyId,
+  }) async {
+    try {
+      final oid = orgId ?? await getOrgId();
+      if (oid == null) return false;
+      return await repo.isBranchNameExists(
+        name,
+        oid,
+        excludeCompanyId: excludeCompanyId,
+      );
+    } catch (e) {
+      debugPrint('[CompanyCtrl] isBranchNameExists ERROR: $e');
+      return false;
+    }
+  }
+
+  Future<bool> isBranchCodeExists(
+    String branchCode, {
+    String? excludeCompanyId,
+  }) async {
+    try {
+      final oid = orgId ?? await getOrgId();
+      if (oid == null) return false;
+      return await repo.isBranchCodeExists(
+        branchCode,
+        oid,
+        excludeCompanyId: excludeCompanyId,
+      );
+    } catch (e) {
+      debugPrint('[CompanyCtrl] isBranchCodeExists ERROR: $e');
+      return false;
+    }
+  }
+
+  Future<bool> isGstinExists(
+    String gstin, {
+    String? excludeCompanyId,
+  }) async {
+    try {
+      final oid = orgId ?? await getOrgId();
+      if (oid == null) return false;
+      return await repo.isGstinExists(
+        gstin,
+        oid,
+        excludeCompanyId: excludeCompanyId,
+      );
+    } catch (e) {
+      debugPrint('[CompanyCtrl] isGstinExists ERROR: $e');
+      return false;
+    }
+  }
+
+  Future<bool> isBranchPhoneExists(
+    String phone, {
+    String? excludeCompanyId,
+  }) async {
+    try {
+      final oid = orgId ?? await getOrgId();
+      if (oid == null) return false;
+      return await repo.isBranchPhoneExists(
+        phone,
+        oid,
+        excludeCompanyId: excludeCompanyId,
+      );
+    } catch (e) {
+      debugPrint('[CompanyCtrl] isBranchPhoneExists ERROR: $e');
+      return false;
+    }
+  }
+
+  Future<bool> isBranchEmailExists(
+    String email, {
+    String? excludeCompanyId,
+  }) async {
+    try {
+      final oid = orgId ?? await getOrgId();
+      if (oid == null) return false;
+      return await repo.isBranchEmailExists(
+        email,
+        oid,
+        excludeCompanyId: excludeCompanyId,
+      );
+    } catch (e) {
+      debugPrint('[CompanyCtrl] isBranchEmailExists ERROR: $e');
+      return false;
+    }
+  }
+
   // ── Kiosk / Without-Login ────────────────────────────────
 
   /// Save kiosk settings (without_login toggle, language, username + password).
@@ -430,7 +522,8 @@ class CompanyController extends GetxController {
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           SriButton(
-            label: "Yes",
+            label: "Delete",
+            color: AppColors.error,
             onPressed: () {
               Get.back();
               controller.deleteBranch(c.id);
