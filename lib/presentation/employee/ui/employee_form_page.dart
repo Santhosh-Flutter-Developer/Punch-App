@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/department_model.dart';
@@ -490,7 +491,7 @@ class _EmployeeFormPageState extends State<EmployeeFormPage> {
           .map<RoleModel>((r) => RoleModel.fromJson(r))
           .toList();
     } catch (e) {
-      debugPrint('[EmpForm] loadBranchData: $e');
+      showError(handleException(e));
     }
   }
 
@@ -2315,7 +2316,7 @@ class _ProfilePicPickerState extends State<_ProfilePicPicker> {
         if (faces.length == 0) {
           Get.snackbar(
             "Warning",
-            "No Face Detected!",
+            "No face was detected in the photo. Please use a clear, well-lit photo with the face fully visible.",
             margin: EdgeInsets.all(10.0),
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: AppColors.warning.withOpacity(0.2),
@@ -2326,7 +2327,7 @@ class _ProfilePicPickerState extends State<_ProfilePicPicker> {
         if (faces.length > 1) {
           Get.snackbar(
             "Warning",
-            "MultiFace Detected!",
+            "More than one face was detected. Please use a photo with only the employee's face visible.",
             margin: EdgeInsets.all(10.0),
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: AppColors.warning.withOpacity(0.2),

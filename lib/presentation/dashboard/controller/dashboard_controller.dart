@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/data/models/dashboard_stats_model.dart';
 import 'package:punch_app/data/services/supabase_service.dart';
 import 'package:punch_app/data/utils/network_time.dart';
@@ -9,6 +10,8 @@ import 'package:punch_app/presentation/attendance/repository/attendance_reposito
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/presentation/employee/repository/employee_repository.dart';
 import 'package:punch_app/presentation/leave/repository/leave_repository.dart';
+import 'package:punch_app/data/helper/helper.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -27,6 +30,7 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     selectedDate = NetworkTime.now().obs;
     loadStats();
   }
@@ -68,6 +72,12 @@ class DashboardController extends GetxController {
     await loadStats();
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(loadStats);
+    } catch (_) {}
+  }
   Future<void> loadStats() async {
     isLoading.value = true;
     try {
@@ -102,7 +112,8 @@ class DashboardController extends GetxController {
             .toList(),
       );
     } catch (e) {
-      log("ERROR: $e");
+      log("Dashboard error: $e");
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/services/sms_service.dart';
 import 'package:punch_app/data/services/supabase_service.dart';
@@ -95,7 +96,7 @@ class ForgotPasswordController extends GetxController {
         data = Map<String, dynamic>.from(rows.first as Map);
       } else {
         log('[ForgotPw] Unexpected RPC shape: $rows');
-        _showError('Unexpected response from server. Please try again.');
+        _showError('Received an unexpected response from the server. Please try again.');
         return;
       }
 
@@ -142,7 +143,7 @@ class ForgotPasswordController extends GetxController {
           'Please run the SQL setup script in your Supabase dashboard.',
         );
       } else {
-        _showError('Something went wrong: ${_trimError(msg)}');
+        _showError(handleException(e));
       }
     } finally {
       isLoading.value = false;
@@ -199,7 +200,7 @@ class ForgotPasswordController extends GetxController {
       otpCtrl.clear();
       await _sendOtp(_resolvedPhone);
     } catch (e) {
-      _showError('Failed to resend OTP.');
+      _showError('Could not resend the OTP. Please check your internet connection and try again.');
     } finally {
       isLoading.value = false;
     }
@@ -234,7 +235,7 @@ class ForgotPasswordController extends GetxController {
       _showSuccess('OTP verified! Set your new password.');
     } else {
       otpCtrl.clear();
-      _showError('Incorrect OTP. Please try again.');
+      _showError('The OTP you entered is incorrect. Please check and try again.');
     }
   }
 
@@ -244,7 +245,7 @@ class ForgotPasswordController extends GetxController {
   Future<void> updatePassword() async {
     if (!passwordFormKey.currentState!.validate()) return;
     if (!otpVerified.value) {
-      _showError('OTP not verified. Please start over.');
+      _showError('OTP verification is incomplete. Please go back and verify your mobile number again.');
       return;
     }
 
@@ -263,7 +264,7 @@ class ForgotPasswordController extends GetxController {
       Get.offAllNamed(AppRoutes.routeLogin);
     } catch (e) {
       log('[ForgotPw] updatePassword error: $e');
-      _showError('Failed to update password: ${_trimError(e.toString())}');
+      _showError(handleException(e));
     } finally {
       isLoading.value = false;
     }

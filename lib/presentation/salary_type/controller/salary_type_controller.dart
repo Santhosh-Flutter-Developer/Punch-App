@@ -2,12 +2,14 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/data/models/salary_type_model.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/data/helper/helper.dart';
 import 'package:punch_app/presentation/salary_type/repository/salary_type_repository.dart';
 import 'package:punch_app/presentation/salary_type/ui/salary_type_form.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -20,9 +22,16 @@ class SalaryTypeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     load();
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(load);
+    } catch (_) {}
+  }
   Future<void> load() async {
     isLoading.value = true;
     try {
@@ -81,7 +90,7 @@ class SalaryTypeController extends GetxController {
       }
       return false;
     } catch (e) {
-      showError('$e');
+      showError(handleException(e));
       return false;
     }
   }
@@ -114,7 +123,7 @@ class SalaryTypeController extends GetxController {
       }
       return false;
     } catch (e) {
-      showError('$e');
+      showError(handleException(e));
       return false;
     }
   }

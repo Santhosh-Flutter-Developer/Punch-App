@@ -843,7 +843,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
     if (_hasFieldErrors) {
       Get.snackbar(
         'Validation Error',
-        'Please fix the duplicate field errors before saving.',
+        'Some fields already exist in the system. Please correct the highlighted fields before saving.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
@@ -867,7 +867,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
         !usernameVerified) {
       Get.snackbar(
         'Validation Error',
-        'Please verify the username before saving.',
+        'Please check the username availability before saving.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
@@ -879,7 +879,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
     if (kioskEnabled && usernameError != null) {
       Get.snackbar(
         'Validation Error',
-        'Fix the kiosk username error before saving.',
+        'Please fix the kiosk username error before saving.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
@@ -907,7 +907,7 @@ class _CompanyDetailState extends State<CompanyDetail> {
     if (kioskEnabled && username.isEmpty) {
       Get.snackbar(
         'Validation Error',
-        'Kiosk username is required.',
+        'Please enter a kiosk username.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
@@ -921,8 +921,8 @@ class _CompanyDetailState extends State<CompanyDetail> {
       Get.snackbar(
         'Validation Error',
         isUsernameChanged
-            ? 'Password is required when changing the username.'
-            : 'Kiosk password is required.',
+            ? 'A new password is required when changing the kiosk username.'
+            : 'Please set a password for the kiosk account.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,

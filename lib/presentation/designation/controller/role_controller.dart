@@ -1,12 +1,12 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/data/models/role_model.dart';
 import 'package:punch_app/data/models/role_permission_model.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/presentation/designation/repository/role_repository.dart';
 import 'package:punch_app/data/helper/helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -22,16 +22,23 @@ class RoleController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     loadRoles();
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(loadRoles);
+    } catch (_) {}
+  }
   Future<void> loadRoles() async {
     isLoading.value = true;
     try {
       roles.value = await repo.getRoles(auth.companyId);
       filteredroles.value = roles.value;
     } catch (e) {
-      log("ERROR: $e");
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -92,7 +99,7 @@ class RoleController extends GetxController {
       roles.add(role);
       showSuccess('Designation created');
     } catch (e) {
-      showError('Failed: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -114,7 +121,7 @@ class RoleController extends GetxController {
       if (idx != -1) roles[idx] = role;
       showSuccess('Designation updated');
     } catch (e) {
-      showError('Failed: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -153,7 +160,7 @@ class RoleController extends GetxController {
       showSuccess('Permissions saved');
       enable.value = false;
     } catch (e) {
-      showError('Failed: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }

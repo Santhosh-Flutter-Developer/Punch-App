@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/services/sms_service.dart';
 import 'package:punch_app/data/services/supabase_service.dart';
@@ -346,7 +347,7 @@ class SignupController extends GetxController {
       otpSent.value = true;
       Get.snackbar(
         'OTP Sent',
-        'OTP sent to +91$phone',
+        'A verification code has been sent to +91\$phone. Please check your messages.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.success,
         colorText: Colors.white,
@@ -356,7 +357,7 @@ class SignupController extends GetxController {
       sendingOtp.value = false;
       Get.snackbar(
         'Error',
-        e.toString(),
+        handleException(e),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.error,
         colorText: Colors.white,
@@ -382,7 +383,7 @@ class SignupController extends GetxController {
         otpVerified.value = true;
         Get.snackbar(
           'Success',
-          'Mobile number verified!',
+          'Mobile number verified successfully!',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: AppColors.success,
           colorText: Colors.white,
@@ -399,7 +400,7 @@ class SignupController extends GetxController {
       }
     } catch (e) {
       Get.snackbar(
-        'Invalid OTP',
+        'Incorrect Verification Code',
         'Verification failed',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.error,
@@ -416,8 +417,8 @@ class SignupController extends GetxController {
     if (!signupformKey.currentState!.validate()) return;
     if (!otpVerified.value) {
       Get.snackbar(
-        'OTP Required',
-        'Please verify your mobile number',
+        'Mobile Verification Required',
+        'Please verify your mobile number before continuing.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.warning,
         colorText: Colors.white,

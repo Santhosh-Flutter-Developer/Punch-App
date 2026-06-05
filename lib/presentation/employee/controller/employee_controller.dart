@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:punch_app/core/constants/app_constants.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/employee_model.dart';
 import 'package:punch_app/data/services/supabase_service.dart';
@@ -17,6 +18,7 @@ import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/presentation/employee/repository/employee_repository.dart';
 import 'package:punch_app/presentation/employee/ui/employee_form_page.dart';
 import 'package:punch_app/data/helper/helper.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -73,6 +75,7 @@ class EmployeeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     if (!kIsWeb) {
       faceInit();
     }
@@ -200,6 +203,12 @@ class EmployeeController extends GetxController {
     );
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(loadEmployees);
+    } catch (_) {}
+  }
   Future<void> loadEmployees() async {
     isLoading.value = true;
     try {
@@ -208,7 +217,7 @@ class EmployeeController extends GetxController {
         .compareTo(b.createdAt ?? DateTime(0)));
      employees.value = list;   
     } catch (e) {
-      showError('Failed to load employees: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -234,7 +243,7 @@ class EmployeeController extends GetxController {
       final emp = await _repo.getEmployeeUserId(id);
       return emp;
     } catch (e) {
-      showError("Failed to load employee: $e");
+      showError(handleException(e));
     }
     return null;
   }
@@ -379,8 +388,7 @@ class EmployeeController extends GetxController {
         } catch (userErr) {
           debugPrint('[EmpCtrl] login user warning: $userErr');
           showError(
-            'Employee saved but login account could not be created: '
-            '$userErr\nYou can set credentials later.',
+            'Employee saved but login account could not be created. You can set credentials later.',
           );
         }
       }
@@ -392,7 +400,7 @@ class EmployeeController extends GetxController {
       showSuccess('Employee "${emp.fullName}" created successfully');
     } catch (e) {
       debugPrint('[EmpCtrl] createEmployee ERROR: $e');
-      showError('Failed to create employee: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -641,7 +649,7 @@ class EmployeeController extends GetxController {
       showSuccess('Employee updated');
     } catch (e) {
       debugPrint('[EmpCtrl] updateEmployee ERROR: $e');
-      showError('Failed to update employee: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -668,7 +676,7 @@ class EmployeeController extends GetxController {
     } catch (e) {
       debugPrint('[EmpCtrl] _updateAuthUser ERROR: $e');
       showError(
-        'Employee data saved, but login credentials could not be changed: $e',
+        'Employee data saved, but login credentials could not be updated. Please try again.',
       );
     }
   }
@@ -719,7 +727,7 @@ class EmployeeController extends GetxController {
         } catch (e) {
           debugPrint('[EmpCtrl] Auth user delete warning: $e');
           // Employee is deleted from DB, just auth cleanup failed
-          showError('Employee deleted but login access may still remain: $e');
+          showError(handleException(e));
         }
       }
 
@@ -727,7 +735,7 @@ class EmployeeController extends GetxController {
       await loadOrgEmployeeCount(); // keep org count in sync
       showSuccess('Employee deleted');
     } catch (e) {
-      showError('Failed to delete: $e');
+      showError(handleException(e));
     }
   }
 

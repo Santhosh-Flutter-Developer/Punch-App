@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/data/models/permission_request_model.dart';
 import 'package:punch_app/data/services/supabase_service.dart';
 import 'package:punch_app/data/utils/network_time.dart';
@@ -7,6 +8,7 @@ import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/data/helper/helper.dart';
 import 'package:punch_app/presentation/permission_request/repository/permission_request_repository.dart';
 import 'package:punch_app/presentation/permission_request/ui/permission_form_dialog.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -19,6 +21,7 @@ class PermissionRequestController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     load();
   }
 
@@ -29,6 +32,12 @@ class PermissionRequestController extends GetxController {
         .toList();
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(load);
+    } catch (_) {}
+  }
   Future<void> load() async {
     try {
       isLoading.value = true;
@@ -38,7 +47,7 @@ class PermissionRequestController extends GetxController {
       );
     } catch (e) {
       debugPrint('[PermCtrl] load error: $e');
-      showError('Failed to load permissions');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -166,7 +175,7 @@ class PermissionRequestController extends GetxController {
       showSuccess('Permission request submitted');
     } catch (e) {
       debugPrint('[PermCtrl] create error: $e');
-      showError(e.toString().replaceAll('Exception: ', ''));
+      showError(handleException(e));
       rethrow;
     } finally {
       isLoading.value = false;
@@ -195,7 +204,7 @@ class PermissionRequestController extends GetxController {
       updateLocal(id, updated);
       showSuccess('Permission approved');
     } catch (e) {
-      showError('Failed to approve: $e');
+      showError(handleException(e));
     }
   }
 
@@ -209,7 +218,7 @@ class PermissionRequestController extends GetxController {
       updateLocal(id, updated);
       showSuccess('Permission rejected');
     } catch (e) {
-      showError('Failed to reject: $e');
+      showError(handleException(e));
     }
   }
 
@@ -219,7 +228,7 @@ class PermissionRequestController extends GetxController {
       permission.removeWhere((p) => p.id == id);
       showSuccess('Permission deleted');
     } catch (e) {
-      showError('Failed to delete: $e');
+      showError(handleException(e));
     }
   }
 

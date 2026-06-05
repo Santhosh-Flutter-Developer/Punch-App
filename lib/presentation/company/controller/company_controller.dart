@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/company_model.dart';
 import 'package:punch_app/data/models/role_permission_model.dart';
@@ -22,6 +23,7 @@ import 'package:punch_app/presentation/leave/controller/leave_controller.dart';
 import 'package:punch_app/presentation/permission_request/controller/permission_request_controller.dart';
 import 'package:punch_app/presentation/salary_type/controller/salary_type_controller.dart';
 import 'package:punch_app/widgets/sri_button.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -40,6 +42,7 @@ class CompanyController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
 
     ever(auth.currentUser, (u) {
       if (u != null && companies.isEmpty) {
@@ -51,6 +54,12 @@ class CompanyController extends GetxController {
     }
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(loadAllCompanies);
+    } catch (_) {}
+  }
   Future<void> loadAllCompanies() async {
     isLoading.value = true;
     errorMessage.value = '';
@@ -113,7 +122,7 @@ class CompanyController extends GetxController {
       }
     } catch (e) {
       errorMessage.value = e.toString();
-      showError('Failed to load companies: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -191,7 +200,7 @@ class CompanyController extends GetxController {
     isLoading.value = true;
     try {
       final oid = orgId ?? await getOrgId();
-      if (oid == null) throw Exception('Organization not found');
+      if (oid == null) throw Exception('Organisation record not found. Please contact support.');
       await client.rpc(
         'add_company_branch',
         params: {
@@ -211,7 +220,7 @@ class CompanyController extends GetxController {
       await loadAllCompanies();
       showSuccess('Branch "${data['name']}" added successfully');
     } catch (e) {
-      showError('Failed to add branch: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -248,7 +257,7 @@ class CompanyController extends GetxController {
       if (idx != -1) companies[idx] = updated;
      
     } catch (e) {
-      showError('Failed to update: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -257,7 +266,7 @@ class CompanyController extends GetxController {
   // ── Delete a branch ──────────────────────────────────────
   Future<void> deleteBranch(String companyId) async {
     if (companies.length <= 1) {
-      showError('Cannot delete the only company');
+      showError('You cannot delete the only branch. Add another branch first, then delete this one.');
       return;
     }
     try {
@@ -268,7 +277,7 @@ class CompanyController extends GetxController {
       }
       showSuccess('Branch deleted');
     } catch (e) {
-      showError('Failed to delete: $e');
+      showError(handleException(e));
     }
   }
 
@@ -303,7 +312,7 @@ class CompanyController extends GetxController {
       final comp = await repo.getCompany(id);
       return comp;
     } catch (e) {
-      showError("Failed to load employee: $e");
+      showError(handleException(e));
     }
     return null;
   }

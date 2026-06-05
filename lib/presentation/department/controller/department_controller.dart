@@ -1,13 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/data/models/department_model.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/presentation/department/repository/department_repository.dart';
 import 'package:punch_app/presentation/department/ui/department_form.dart';
 import 'package:punch_app/data/helper/helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -20,16 +20,23 @@ class DepartmentController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     loadDepartments();
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(loadDepartments);
+    } catch (_) {}
+  }
   Future<void> loadDepartments() async {
     isLoading.value = true;
     try {
       departments.value = await repo.getDepartments(auth.companyId);
       filteredDepartments.value = departments.value;
     } catch (e) {
-      log("ERROR: $e");
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -92,7 +99,7 @@ class DepartmentController extends GetxController {
       departments.add(await repo.createDepartment(data));
       showSuccess('Department created');
     } catch (e) {
-      showError('$e');
+      showError(handleException(e));
     }
   }
 
@@ -121,7 +128,7 @@ class DepartmentController extends GetxController {
       if (idx != -1) departments[idx] = d;
       showSuccess('Department updated');
     } catch (e) {
-      showError('$e');
+      showError(handleException(e));
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/leave_request_model.dart';
 import 'package:punch_app/data/utils/network_time.dart';
@@ -208,7 +209,7 @@ class LeaveFormDialogState extends State<LeaveFormDialog> {
       });
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      if (mounted) showErr('Error: $e');
+      if (mounted) showErr(handleException(e));
     } finally {
       if (mounted) setState(() => isLoading = false);
     }

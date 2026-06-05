@@ -83,8 +83,7 @@ class AuthRepository {
 
       if (found == null || found.isEmpty) {
         throw Exception(
-          'User not registered. '
-          'Check your username / employee code, or login with email.',
+          'No account found for this username or employee code. Please check and try again, or log in with your email address.',
         );
       }
       emailToUse = found;
@@ -95,7 +94,7 @@ class AuthRepository {
       email: emailToUse,
       password: password,
     );
-    if (res.user == null) throw Exception('Invalid credentials');
+    if (res.user == null) throw Exception('Incorrect email or password. Please try again.');
 
     // ── Fetch full user profile with role ────────────────
     final userRow = await SupabaseService.client
@@ -106,7 +105,7 @@ class AuthRepository {
 
     if (userRow == null) {
       throw Exception(
-        'User profile not found. Please contact your administrator.',
+        'Your user profile could not be loaded. Please contact your administrator.',
       );
     }
     return userRow;

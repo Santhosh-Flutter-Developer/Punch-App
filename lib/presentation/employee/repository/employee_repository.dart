@@ -81,7 +81,7 @@ class EmployeeRepository {
       'preview_emp_code',
       params: {'p_company_id': companyId},
     );
-    if (result == null) throw Exception('Failed to preview employee code');
+    if (result == null) throw Exception('Could not preview the employee code. Please try again.');
     return result as String;
   }
 
@@ -92,7 +92,7 @@ class EmployeeRepository {
       'generate_emp_code',
       params: {'p_company_id': companyId},
     );
-    if (result == null) throw Exception('Failed to generate employee code');
+    if (result == null) throw Exception('Could not generate an employee code. Please try again or enter one manually.');
     return result as String;
   }
 

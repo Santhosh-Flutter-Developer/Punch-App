@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:punch_app/core/constants/app_constants.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/data/models/role_model.dart';
 import 'package:punch_app/data/models/role_permission_model.dart';
 import 'package:punch_app/data/models/subscription_model.dart';
@@ -10,7 +11,6 @@ import 'package:punch_app/presentation/auth/repository/auth_repository.dart';
 import 'package:punch_app/presentation/employee/repository/employee_repository.dart';
 import 'package:punch_app/presentation/subscription/repository/subscription_repository.dart';
 import 'package:punch_app/routes/app_routes.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthController extends GetxController {
   final authRepo = AuthRepository();
@@ -118,8 +118,8 @@ class AuthController extends GetxController {
         Get.snackbar(
           'Login Failed',
           (employee?.mobileLogin == false || employee?.mobileLogin == null)
-              ? "Mobile login not allowed for this user. Contact Admin..."
-              : "Logged User is inactive. Contact Admin...",
+              ? "Mobile login is disabled for your account. Please contact your administrator."
+              : "Your account has been deactivated. Please contact your administrator.",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.amber.shade600,
           colorText: Colors.white,
@@ -127,20 +127,10 @@ class AuthController extends GetxController {
         );
         logout();
       }
-    } on AuthException catch (e) {
+    } catch (e) {
       Get.snackbar(
         'Login Failed',
-        e.message,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade600,
-        colorText: Colors.white,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-      );
-    } on Exception catch (e) {
-      final msg = e.toString().replaceAll('Exception: ', '');
-      Get.snackbar(
-        'Login Failed',
-        msg,
+        handleException(e),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
@@ -190,20 +180,10 @@ class AuthController extends GetxController {
         duration: const Duration(seconds: 4),
       );
       Get.offAllNamed(AppRoutes.routeLogin);
-    } on AuthException catch (e) {
+    } catch (e) {
       Get.snackbar(
         'Registration Failed',
-        e.message,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade600,
-        colorText: Colors.white,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-      );
-    } on Exception catch (e) {
-      final msg = e.toString().replaceAll('Exception: ', '');
-      Get.snackbar(
-        'Registration Failed',
-        msg,
+        handleException(e),
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,

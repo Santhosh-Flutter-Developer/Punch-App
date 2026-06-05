@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/utils/network_time.dart';
 import 'package:punch_app/presentation/attendance/controller/attendance_controller.dart';
@@ -123,7 +124,7 @@ class _PunchFormDialogState extends State<PunchFormDialog> {
       });
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      snack('Error: $e');
+      snack(handleException(e));
     } finally {
       if (mounted) setState(() => loading = false);
     }

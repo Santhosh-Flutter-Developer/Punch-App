@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:punch_app/core/constants/app_constants.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/attendance_log_model.dart';
 import 'package:punch_app/data/models/employee_model.dart';
@@ -511,7 +512,7 @@ class FaceRecognitionViewState extends State<FaceRecognitionView> {
       _audio.play(AttendanceAudioEvent.punchFailed, _notifLang); // 🔊
       Get.snackbar(
         'Error',
-        'Failed to record punch: $e',
+        handleException(e),
         backgroundColor: AppColors.error,
         colorText: Colors.white,
       );

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
@@ -8,7 +9,15 @@ class LocationService extends GetxService {
   Future<bool> requestPermission() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      Get.snackbar('Location', 'Location services are disabled');
+      Get.snackbar(
+      'Location Disabled',
+      'Location services are turned off on your device. Go to Settings → Location and enable it.',
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: const Color(0xFFF59E0B),
+      colorText: Colors.white,
+      duration: const Duration(seconds: 4),
+      icon: const Icon(Icons.location_off_rounded, color: Colors.white),
+    );
       return false;
     }
 

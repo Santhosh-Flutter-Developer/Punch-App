@@ -1,11 +1,11 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/data/models/subscription_model.dart';
 import 'package:punch_app/data/utils/network_time.dart';
 import 'package:punch_app/data/helper/helper.dart';
 import 'package:punch_app/presentation/subscription/repository/subscription_repository.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -19,9 +19,16 @@ class SubscriptionController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     load();
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(load);
+    } catch (_) {}
+  }
   Future<void> load() async {
     isLoading.value = true;
     try {
@@ -33,7 +40,7 @@ class SubscriptionController extends GetxController {
       subscription.value ??= await repo.getActiveSubscription(auth.companyId);
       plans.value = await repo.getPlans();
     } catch (e) {
-      log("ERROR: $e");
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -96,7 +103,7 @@ class SubscriptionController extends GetxController {
         'Subscription activated! Enjoy ${duration == 'yearly' ? '1 Year' : '30 Days'} of Punch App.',
       );
     } catch (e) {
-      showError('Subscription failed: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }

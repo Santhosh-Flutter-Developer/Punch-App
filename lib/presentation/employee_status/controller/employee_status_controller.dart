@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/employee_status_model.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
@@ -9,6 +10,7 @@ import 'package:punch_app/presentation/employee_status/repository/employee_statu
 import 'package:punch_app/presentation/employee_status/ui/employee_status_form.dart';
 import 'package:punch_app/data/helper/helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -21,7 +23,14 @@ class EmployeeStatusController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     load();
+  }
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(load);
+    } catch (_) {}
   }
 
   Future<void> load() async {
@@ -73,7 +82,7 @@ class EmployeeStatusController extends GetxController {
       );
       showSuccess('Status created');
     } catch (e) {
-      showError('$e');
+      showError(handleException(e));
     }
   }
 
@@ -92,7 +101,7 @@ class EmployeeStatusController extends GetxController {
       if (idx != -1) statuses[idx] = s;
       showSuccess('Status updated');
     } catch (e) {
-      showError('$e');
+      showError(handleException(e));
     }
   }
 
@@ -136,6 +145,8 @@ class EmployeeStatusController extends GetxController {
         message = e.message;
       }
       showError(message, title: "Delete Failed");
+    } catch (e) {
+      showError(handleException(e));
     }
   }
 

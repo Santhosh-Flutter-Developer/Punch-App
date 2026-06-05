@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseService {
@@ -56,13 +54,8 @@ class SupabaseService {
     String table,
     Map<String, dynamic> data,
   ) async {
-    try {
-      final res = await client.from(table).insert(data).select().single();
-      return res;
-    } catch (e) {
-      log("ERROR:$e");
-    }
-    return {};
+    final res = await client.from(table).insert(data).select().single();
+    return res;
   }
 
   static Future<Map<String, dynamic>> update(

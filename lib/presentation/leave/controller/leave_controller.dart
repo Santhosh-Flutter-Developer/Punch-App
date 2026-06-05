@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/leave_request_model.dart';
 import 'package:punch_app/data/services/supabase_service.dart';
@@ -7,6 +8,7 @@ import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/data/helper/helper.dart';
 import 'package:punch_app/presentation/leave/repository/leave_repository.dart';
 import 'package:punch_app/presentation/leave/ui/leave_form_dialog.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -19,6 +21,7 @@ class LeaveController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     loadLeaves();
   }
 
@@ -27,6 +30,12 @@ class LeaveController extends GetxController {
     return leaves.where((l) => l.status.name == filterStatus.value).toList();
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(loadLeaves);
+    } catch (_) {}
+  }
   Future<void> loadLeaves() async {
     isLoading.value = true;
     try {
@@ -36,7 +45,7 @@ class LeaveController extends GetxController {
       );
     } catch (e) {
       debugPrint('[LeaveCtrl] loadLeaves error: $e');
-      showError('Failed to load leave requests: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -99,7 +108,7 @@ class LeaveController extends GetxController {
       showSuccess('Leave request submitted successfully');
     } catch (e) {
       debugPrint('[LeaveCtrl] create error: $e');
-      showError(e.toString().replaceAll('Exception: ', ''));
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -116,7 +125,7 @@ class LeaveController extends GetxController {
       showSuccess('Leave approved');
     } catch (e) {
       debugPrint('[LeaveCtrl] approve error: $e');
-      showError('Failed to approve: $e');
+      showError(handleException(e));
     }
   }
 
@@ -131,7 +140,7 @@ class LeaveController extends GetxController {
       showSuccess('Leave rejected');
     } catch (e) {
       debugPrint('[LeaveCtrl] reject error: $e');
-      showError('Failed to reject: $e');
+      showError(handleException(e));
     }
   }
 
@@ -142,7 +151,7 @@ class LeaveController extends GetxController {
       showSuccess('Leave deleted');
     } catch (e) {
       debugPrint('[LeaveCtrl] delete error: $e');
-      showError('Failed to delete: $e');
+      showError(handleException(e));
     }
   }
 

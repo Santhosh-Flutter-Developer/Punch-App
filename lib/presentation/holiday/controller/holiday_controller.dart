@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/holiday_model.dart';
 import 'package:punch_app/data/utils/network_time.dart';
@@ -9,6 +8,7 @@ import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/data/helper/helper.dart';
 import 'package:punch_app/presentation/holiday/repository/holiday_repository.dart';
 import 'package:punch_app/presentation/holiday/ui/holiday_form.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -22,9 +22,16 @@ class HolidayController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     loadHolidays();
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(loadHolidays);
+    } catch (_) {}
+  }
   Future<void> loadHolidays() async {
     isLoading.value = true;
     try {
@@ -34,7 +41,7 @@ class HolidayController extends GetxController {
       );
       filteredholidays.value = holidays.value;
     } catch (e) {
-      log("ERROR: $e");
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -69,7 +76,7 @@ class HolidayController extends GetxController {
       filteredholidays.value = List.from(holidays);
       showSuccess('Holiday added');
     } catch (e) {
-      showError('$e');
+      showError(handleException(e));
     }
   }
 
@@ -81,7 +88,7 @@ class HolidayController extends GetxController {
       filteredholidays.value = List.from(holidays);
       showSuccess('Holiday updated');
     } catch (e) {
-      showError('$e');
+      showError(handleException(e));
     }
   }
 
@@ -114,7 +121,7 @@ class HolidayController extends GetxController {
       filteredholidays.value = List.from(holidays);
       showSuccess('Holiday deleted');
     } catch (e) {
-      showError('$e');
+      showError(handleException(e));
     }
   }
 

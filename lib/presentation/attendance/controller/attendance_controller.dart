@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:punch_app/core/handler/exception_handler.dart';
 import 'package:punch_app/core/theme/app_colors.dart';
 import 'package:punch_app/data/models/attendance_log_model.dart';
 import 'package:punch_app/data/services/attendance_export_service.dart';
@@ -14,6 +15,7 @@ import 'package:punch_app/presentation/attendance/widgets/filter_sheet.dart';
 import 'package:punch_app/presentation/attendance/widgets/punch_form_dialog.dart';
 import 'package:punch_app/presentation/auth/controller/auth_controller.dart';
 import 'package:punch_app/data/helper/helper.dart';
+import 'package:punch_app/data/services/connectivity_service.dart';
 
 AuthController get auth => Get.find<AuthController>();
 
@@ -35,6 +37,7 @@ class AttendanceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _registerReload();
     NetworkTime.syncTime();
     final now = NetworkTime.now();
     fromDate.value = DateTime(now.year, now.month, 1);
@@ -43,36 +46,24 @@ class AttendanceController extends GetxController {
     loadLogs();
   }
 
+
+  void _registerReload() {
+    try {
+      Get.find<ConnectivityService>().register(loadLogs);
+    } catch (_) {}
+  }
   Future<void> loadLogs() async {
-    // In kiosk mode, currentUser is null so companyId and employeeId are both
-    // empty strings — passing an empty string to a UUID column causes:
-    //   PostgrestException: invalid input syntax for type uuid: ""
-    // Skip loading altogether; kiosk attendance is handled via face_detection.dart.
-    if (auth.companyId.isEmpty) {
-      debugPrint('[AttendCtrl] loadLogs skipped — companyId is empty (kiosk mode?)');
-      return;
-    }
-
-    // For non-admin users the employeeId filter is applied. If the id is empty
-    // (e.g. session not fully restored yet) skip the query to avoid the UUID error.
-    final String? employeeIdFilter =
-        !auth.isAdmin ? auth.employeeId : filterEmployeeId.value;
-    if (!auth.isAdmin && (employeeIdFilter == null || employeeIdFilter.isEmpty)) {
-      debugPrint('[AttendCtrl] loadLogs skipped — employeeId is empty');
-      return;
-    }
-
     isLoading.value = true;
     try {
       logs.value = await repo.getAttendanceLogs(
         auth.companyId,
         fromDate: fromDate.value,
         toDate: toDate.value,
-        employeeId: employeeIdFilter,
+        employeeId: !auth.isAdmin ? auth.employeeId : filterEmployeeId.value,
       );
     } catch (e) {
       debugPrint('[AttendCtrl] load error: $e');
-      showError('Failed to load attendance: $e');
+      showError(handleException(e));
     } finally {
       isLoading.value = false;
     }
@@ -245,7 +236,7 @@ class AttendanceController extends GetxController {
       if (punchType == 'out') {
         // Can only punch out if last punch was "in"
         if (lastLog == null || lastLog.punchType != PunchType.in_) {
-          showError('Please add Punch IN before Punch OUT');
+          showError('Punch IN must be recorded before Punch OUT. Please add an IN record first.');
           showErr.value = false;
           return;
         }
@@ -254,7 +245,7 @@ class AttendanceController extends GetxController {
       if (punchType == 'in') {
         // Can only punch in if no punch yet, or last punch was "out"
         if (lastLog != null && lastLog.punchType == PunchType.in_) {
-          showError('Please add Punch OUT before adding another Punch IN');
+          showError('Please record a Punch OUT before adding another Punch IN.');
           showErr.value = false;
           return;
         }
@@ -278,7 +269,7 @@ class AttendanceController extends GetxController {
       if (showToast == true) showSuccess('Punch adjusted successfully');
     } catch (e) {
       debugPrint('[AdjustPunch] error: $e');
-      showError('Failed: $e');
+      showError(handleException(e));
     }
   }
 
@@ -327,7 +318,7 @@ class AttendanceController extends GetxController {
       logs.removeWhere((l) => l.id == id);
       showSuccess('Log deleted');
     } catch (e) {
-      showError('Failed: $e');
+      showError(handleException(e));
     }
   }
 
@@ -336,13 +327,7 @@ class AttendanceController extends GetxController {
   Future<void> showExportMenu(BuildContext context) async {
     final rows = groupedByEmployeeDate;
     if (rows.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No data to export'),
-          backgroundColor: AppColors.warning,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      showWarning('No attendance data to export for the selected period.');
       return;
     }
 
@@ -360,27 +345,7 @@ class AttendanceController extends GetxController {
 
     try {
       if (format == ExportFormat.pdf) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Row(
-              children: [
-                SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(width: 12),
-                Text('Generating PDF...'),
-              ],
-            ),
-            duration: Duration(seconds: 3),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.info,
-          ),
-        );
+        showSuccess('Generating PDF…');
         await AttendanceExportService.exportPDF(
           context: context,
           rows: rows,
@@ -389,27 +354,7 @@ class AttendanceController extends GetxController {
           companyName: companyName,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Row(
-              children: [
-                SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(width: 12),
-                Text('Generating Excel...'),
-              ],
-            ),
-            duration: Duration(seconds: 3),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.info,
-          ),
-        );
+        showSuccess('Generating Excel…');
         await AttendanceExportService.exportExcel(
           context: context,
           rows: rows,
@@ -421,13 +366,7 @@ class AttendanceController extends GetxController {
     } catch (e) {
       debugPrint('[Export] error: $e');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Export failed: $e'),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        showError(handleException(e));
       }
     }
   }
@@ -457,13 +396,7 @@ class AttendanceController extends GetxController {
   void exportCSV(BuildContext context, AttendanceController controller) {
     final rows = controller.groupedByEmployeeDate;
     if (rows.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No data to export'),
-          backgroundColor: AppColors.warning,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      showWarning('No attendance data to export for the selected period.');
       return;
     }
     final buf = StringBuffer();
@@ -499,28 +432,9 @@ class AttendanceController extends GetxController {
       final blob = base64.encode(bytes);
       debugPrint('[Export] CSV data prepared (${bytes.length} bytes)');
       // Show preview snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Exported ${rows.length} records. CSV ready.'),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          action: SnackBarAction(
-            label: 'Copy',
-            textColor: Colors.white,
-            onPressed: () {
-              /* clipboard copy */
-            },
-          ),
-        ),
-      );
+      showSuccess('Exported \${rows.length} records. CSV ready.');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Exported ${rows.length} records'),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      showSuccess('Exported \${rows.length} records');
     }
     debugPrint('[Export] CSV:\n$buf');
   }
